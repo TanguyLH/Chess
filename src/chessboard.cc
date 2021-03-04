@@ -7,11 +7,7 @@ namespace board
 
     void board_filler(std::vector<uint64_t> *boards, int i_offset, int j_offset)
     {
-        uint64_t i = 1;
-        i <<= i_offset;
-        uint64_t j = 1;
-        j <<= j_offset;
-        (j_offset != -1) ? boards->push_back(i | j) : boards->push_back(i);
+        (j_offset != -1) ? boards->push_back(1L << i_offset | 1L << j_offset) : boards->push_back(1L << i_offset);
     }
 
     Chessboard::Chessboard()
@@ -34,12 +30,8 @@ namespace board
         board_filler(&(this->boards_), 61, 58);
         board_filler(&(this->boards_), 62, 57);
         
-        uint64_t i = 1;
-        i <<= 47;
-        uint64_t j = 1;
-        j <<= 55;
         uint64_t res = 0;
-        for (; j > i; j >>= 1)
+        for (uint64_t j = 1L << 55; j > 1L << 47; j >>= 1)
             res |= j;
         this->boards_.push_back(res);
 
