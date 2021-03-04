@@ -11,7 +11,7 @@ namespace board
         i <<= i_offset;
         uint64_t j = 1;
         j <<= j_offset;
-        (j_offset != -1) ? boards->push_back(i + j) : boards->push_back(i);
+        (j_offset != -1) ? boards->push_back(i | j) : boards->push_back(i);
     }
 
     Chessboard::Chessboard()
@@ -40,7 +40,7 @@ namespace board
         j <<= 55;
         uint64_t res = 0;
         for (; j > i; j >>= 1)
-            res += j;
+            res |= j;
         this->boards_.push_back(res);
 
         board_filler(&(this->boards_), 59, -1);
@@ -66,7 +66,7 @@ namespace board
                 {
                     if (founded)
                     {
-                        std::cerr << "\n\nERROR 2 PIECES ON SAME CELL\n" << std::endl;
+                        std::cerr << "\n\nERROR: 2 PIECES ON SAME CELL\n" << std::endl;
                         exit(1);
                     }
                     founded = true;
