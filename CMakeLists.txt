@@ -11,12 +11,12 @@ set(OPT_FLAGS
 # SOURCES : FIXME
 # Put all your sources here EXCEPT YOUR MAIN.CC
 set(SRC_ENGINE
-    ""
+    "src/chessboard.cc"
 )
 
 # Directories containing headers must be specified in the include_directories()
 include_directories(
-    ""
+    "src"
 )
 
 # Put your test files here
@@ -61,17 +61,17 @@ target_link_libraries(chessengine PRIVATE ${LIBRARIES})
 find_package(GTest)
 
 # If it is, create a dedicated target "tests"
-if(GTest_FOUND)
-  include(GoogleTest)
+# if(GTest_FOUND)
+#   include(GoogleTest)
 
-  add_executable(tests)
-  target_sources(tests PRIVATE 
-    ${SRC_GTEST}
-    ${SRC_ENGINE}
-  )
-  target_compile_options(tests PRIVATE -Wall -Werror -Wextra)
-  target_link_libraries(tests PRIVATE GTest::GTest ${LIBRARIES})
-endif()
+#   add_executable(tests)
+#  target_sources(tests PRIVATE 
+#     ${SRC_GTEST}
+#     ${SRC_ENGINE}
+#  )
+#   target_compile_options(tests PRIVATE -Wall -Werror -Wextra)
+#   target_link_libraries(tests PRIVATE GTest::GTest ${LIBRARIES})
+# endif()
 
 # STATIC TARGET
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
