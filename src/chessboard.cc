@@ -4,6 +4,16 @@
 
 namespace board
 {
+
+    void board_filler(std::vector<uint64_t> *boards, int i_offset, int j_offset)
+    {
+        uint64_t i = 1;
+        i <<= i_offset;
+        uint64_t j = 1;
+        j <<= j_offset;
+        (j_offset != -1) ? boards->push_back(i | j) : boards->push_back(i);
+    }
+
     Chessboard::Chessboard()
     {
         this->turn_ = 0;
@@ -11,31 +21,29 @@ namespace board
         this->white_king_castling_ = false;
         this->white_queen_castling_ = false;
         this->black_king_castling_ = false;
-        /*
-        for (uint64_t n = 1 << 14; n > 0; n >>= 1)
-            this->boards_.push_back(n);
-        */
-        uint64_t i = 1;
-        i <<= 51;
-        uint64_t n = 1;
-        n <<= 63;
-        for (; n > i; n >>= 1)
-            this->boards_.push_back(n);
-        /*
-        this->black_queen_castling_ = false;
-        this->boards_.push_back(1 << 63);
-        this->boards_.push_back(1 << 62);
-        this->boards_.push_back(1 << 61);
-        this->boards_.push_back(1 << 60);
-        this->boards_.push_back(1 << 59);
-        this->boards_.push_back(1 << 58);
-        this->boards_.push_back(1);
-        this->boards_.push_back(2);
-        this->boards_.push_back(4);
+
         this->boards_.push_back(8);
+        this->boards_.push_back(129);
+        this->boards_.push_back(36);
+        this->boards_.push_back(66);
+        this->boards_.push_back(65280);
         this->boards_.push_back(16);
-        this->boards_.push_back(32);
-        */
+
+        board_filler(&(this->boards_), 60, -1);
+        board_filler(&(this->boards_), 63, 56);
+        board_filler(&(this->boards_), 61, 58);
+        board_filler(&(this->boards_), 62, 57);
+        
+        uint64_t i = 1;
+        i <<= 47;
+        uint64_t j = 1;
+        j <<= 55;
+        uint64_t res = 0;
+        for (; j > i; j >>= 1)
+            res |= j;
+        this->boards_.push_back(res);
+
+        board_filler(&(this->boards_), 59, -1);
     }
 
     void Chessboard::print_board()
@@ -49,12 +57,19 @@ namespace board
             int i = 0;
             std::string color = "\x1B[0m";
             std::cout << " | ";
+            bool founded = false;
             while (i < 12)
             {
                 if (i == 6)
-                    color = "\x1B[197m";
+                    color = "\x1B[31m";
                 if (b[i] & n)
                 {
+                    if (founded)
+                    {
+                        std::cerr << "\n\nERROR: 2 PIECES ON SAME CELL\n" << std::endl;
+                        exit(1);
+                    }
+                    founded = true;
                     if (i == 0 || i == 6)
                         std::cout << color << "Q" << "\x1B[0m";
                     else if (i == 1 || i == 7)
@@ -67,16 +82,17 @@ namespace board
                         std::cout << color << "i" << "\x1B[0m";
                     else if (i == 5 || i == 11)
                         std::cout << color << "K" << "\x1B[0m";
-                    break;
                 }
                 i++;
             }
-            if (i == 12)
+            if (!founded)
                 std::cout << " ";
             if (!(count % 8))
+            {
+                std::cout << " | ";
                 std::cout << std::endl;
+            }
             count++;
-            // std::cout << " | ";
         }
         std::cout << std::endl;
     }
