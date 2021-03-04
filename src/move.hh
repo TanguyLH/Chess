@@ -1,12 +1,12 @@
 
 #include "color.hh"
 #include "piece-type.hh"
-
+#include "position.hh"
 
 namespace board
 {
     
-    Class Move
+    class Move
     {
         public:
             Position from_;
@@ -15,6 +15,9 @@ namespace board
             PieceType piece_;
             Color color_;
 
+            Move(Position from, Position to, PieceType piece, Color color);
             short board_index() const;
+
+    };
 
 }
