@@ -7,7 +7,8 @@ namespace board
 
     void board_filler(std::vector<uint64_t> *boards, int i_offset, int j_offset)
     {
-        (j_offset != -1) ? boards->push_back(1L << i_offset | 1L << j_offset) : boards->push_back(1L << i_offset);
+        (j_offset != -1) ? boards->push_back(1L << i_offset | 1L << j_offset) 
+            : boards->push_back(1L << i_offset);
     }
 
     Chessboard::Chessboard()
