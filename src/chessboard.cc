@@ -49,19 +49,19 @@ namespace board
             int i = 0;
             std::string color = "\x1B[0m";
             std::cout << " | ";
-            bool founded = false;
+            bool found = false;
             while (i < 12)
             {
                 if (i == 6)
                     color = "\x1B[31m";
                 if (b[i] & n)
                 {
-                    if (founded)
+                    if (found)
                     {
                         std::cerr << "\n\nERROR: 2 PIECES ON SAME CELL\n" << std::endl;
                         exit(1);
                     }
-                    founded = true;
+                    found = true;
                     if (i == 0 || i == 6)
                         std::cout << color << "Q" << "\x1B[0m";
                     else if (i == 1 || i == 7)
@@ -77,7 +77,7 @@ namespace board
                 }
                 i++;
             }
-            if (!founded)
+            if (!found)
                 std::cout << " ";
             if (!(count % 8))
             {
