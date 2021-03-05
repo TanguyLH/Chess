@@ -1,14 +1,15 @@
 #include <iostream>
 
 #include "chessboard.hh"
+#include "generate_move.hh"
 
 namespace board
 {
 
-    void board_filler(std::vector<uint64_t> *boards, int i_offset, int j_offset)
+    void board_filler(std::vector<uint64_t> &boards, int i_offset, int j_offset)
     {
-        (j_offset != -1) ? boards->push_back(1L << i_offset | 1L << j_offset) 
-            : boards->push_back(1L << i_offset);
+        (j_offset != -1) ? boards.push_back(1L << i_offset | 1L << j_offset) 
+            : boards.push_back(1L << i_offset);
     }
 
     Chessboard::Chessboard()
@@ -26,17 +27,18 @@ namespace board
         this->boards_.push_back(65280);
         this->boards_.push_back(16);
 
-        board_filler(&(this->boards_), 60, -1);
-        board_filler(&(this->boards_), 63, 56);
-        board_filler(&(this->boards_), 61, 58);
-        board_filler(&(this->boards_), 62, 57);
+        board_filler(this->boards_, 60, -1);
+        board_filler(this->boards_, 63, 56);
+        board_filler(this->boards_, 61, 58);
+        board_filler(this->boards_, 62, 57);
         
         uint64_t res = 0;
         for (uint64_t j = 1L << 55; j > 1L << 47; j >>= 1)
             res |= j;
         this->boards_.push_back(res);
 
-        board_filler(&(this->boards_), 59, -1);
+        board_filler(this->boards_, 59, -1);
+        this->pins_ = 0ULL;
     }
 
     void Chessboard::print_board()
@@ -88,6 +90,18 @@ namespace board
             count++;
         }
         std::cout << std::endl;
+    }
+
+    Chessboard::Chessboard(std::vector<uint64_t> boards)
+    {
+        this->turn_ = 0;
+        this->white_turn_ = true;
+        this->white_king_castling_ = false;
+        this->white_queen_castling_ = false;
+        this->black_king_castling_ = false;
+
+        this->boards_ = boards;        
+        this->pins_ = find_absolute_pins(*this);
     }
 }
 

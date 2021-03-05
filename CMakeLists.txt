@@ -12,6 +12,7 @@ set(OPT_FLAGS
 # Put all your sources here EXCEPT YOUR MAIN.CC
 set(SRC_ENGINE
     "src/chessboard.cc"
+    "src/generate_move.cc"
 )
 
 # Directories containing headers must be specified in the include_directories()
