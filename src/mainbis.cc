@@ -32,13 +32,13 @@ int main(void)
     // ROOK h4 & d1
     boards.push_back(16777232ULL);
     // BISHOP b2
-    boards.push_back(64ULL);
+    boards.push_back(64ULL | 512ULL);
     // KNIGHT NONE
     boards.push_back(0ULL);
     // PAWN NONE
     boards.push_back(0ULL);
     // KING NONE
-    boards.push_back(0ULL);
+    boards.push_back(1ULL);
 
 
     // BLACK QUEEN NONE
@@ -59,6 +59,12 @@ int main(void)
     cb.print_board();
     std::cout << "PINNED PIECES : \n";
     print_board(cb.pins_);
+    std::cout << "white king is check ?\n";
+    std::string phrase = board::check(cb, board::Color::WHITE) ? "true" : "false";
+    std::cout << phrase << std::endl;;
+    std::cout << "black king is check ?\n";
+    phrase = board::check(cb, board::Color::BLACK) ? "true" : "false";
+    std::cout << phrase << std::endl;;
     std::cout << "ended !" << std::endl;
     return 0;
 }
