@@ -87,22 +87,22 @@ namespace board
                 {
                     bit_pos = piece << 7;
                     if (bit_pos & adv_col_occ)
-                        res.push_back(Move(pos, Position(static_cast<File>(x + 1), static_cast<Rank>(y + 1)), board::PieceType::KNIGHT, color));
+                        res.push_back(Move(pos, Position(static_cast<File>(x + 1), static_cast<Rank>(y + 1)), board::PieceType::PAWN, color));
                 }
                 if (x > 0)
                 {      
                     bit_pos = piece << 9;
                     if (bit_pos & adv_col_occ)
-                        res.push_back(Move(pos, Position(static_cast<File>(x - 1), static_cast<Rank>(y + 1)), board::PieceType::KNIGHT, color));                    
+                        res.push_back(Move(pos, Position(static_cast<File>(x - 1), static_cast<Rank>(y + 1)), board::PieceType::PAWN, color));                    
                 }
                 //deplacement move
                 bit_pos = piece << 8;
                 if (!(bit_pos & all_occ))
                 {
-                    res.push_back(Move(pos, Position(static_cast<File>(x), static_cast<Rank>(y + 1)), board::PieceType::KNIGHT, color));
+                    res.push_back(Move(pos, Position(static_cast<File>(x), static_cast<Rank>(y + 1)), board::PieceType::PAWN, color));
                     if (y == 1 && !((bit_pos <<= 8) & all_occ))
                     {
-                        res.push_back(Move(pos, Position(static_cast<File>(x), static_cast<Rank>(y + 2)), board::PieceType::KNIGHT, color));                         
+                        res.push_back(Move(pos, Position(static_cast<File>(x), static_cast<Rank>(y + 2)), board::PieceType::PAWN, color));                         
                     }
                 }          
                 
@@ -114,22 +114,22 @@ namespace board
                 {
                     bit_pos = piece >> 7;
                     if (bit_pos & adv_col_occ)
-                        res.push_back(Move(pos, Position(static_cast<File>(x - 1), static_cast<Rank>(y - 1)), board::PieceType::KNIGHT, color));
+                        res.push_back(Move(pos, Position(static_cast<File>(x - 1), static_cast<Rank>(y - 1)), board::PieceType::PAWN, color));
                 }
                 if (x < 7)
                 {      
                     bit_pos = piece >> 9;
                     if (bit_pos & adv_col_occ)
-                        res.push_back(Move(pos, Position(static_cast<File>(x + 1), static_cast<Rank>(y - 1)), board::PieceType::KNIGHT, color));                    
+                        res.push_back(Move(pos, Position(static_cast<File>(x + 1), static_cast<Rank>(y - 1)), board::PieceType::PAWN, color));                    
                 }
                 //deplacement move
                 bit_pos = piece >> 8;
                 if (!(bit_pos & all_occ))
                 {
-                    res.push_back(Move(pos, Position(static_cast<File>(x), static_cast<Rank>(y - 1)), board::PieceType::KNIGHT, color));
+                    res.push_back(Move(pos, Position(static_cast<File>(x), static_cast<Rank>(y - 1)), board::PieceType::PAWN, color));
                     if (y == 6 && !((bit_pos >>= 8) & all_occ))
                     {
-                        res.push_back(Move(pos, Position(static_cast<File>(x), static_cast<Rank>(y - 2)), board::PieceType::KNIGHT, color));                         
+                        res.push_back(Move(pos, Position(static_cast<File>(x), static_cast<Rank>(y - 2)), board::PieceType::PAWN, color));                         
                     }
                 }                
             }
