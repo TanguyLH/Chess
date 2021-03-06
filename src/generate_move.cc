@@ -158,16 +158,15 @@ namespace board
         bool b = board.white_turn_;
         uint64_t cur = board.boards_[5 + b * 6];
 
-        uint64_t slides = 0L;
-        for (int i = 0 + (!b) * 6; i < 3 + (!b) * 6; i++)
-            slides |= board.boards_[i];
-
         uint64_t obstacles = 0L;
         for (int i = 0 + b * 6; i < 5 + b * 6; i++)
             obstacles |= board.boards_[i];
          
-        res |= get_pin_tdlr(obstacles, slides, cur);
-        res |= get_pin_diag(obstacles, slides, cur);
+        int i = (!b) * 6;
+        res |= get_pin_tdlr(obstacles, board.boards_[0 + i] 
+                | board.boards_[1 + i], cur);
+        res |= get_pin_diag(obstacles, board.boards_[0 + i]
+                | board.boards_[2 + i], cur);
         board.pins_ = res;
         return res;
     }
