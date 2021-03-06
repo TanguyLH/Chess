@@ -1,7 +1,7 @@
 #include <iostream>
 #include <boost/program_options.hpp>
-#include "chessboard.hh"
-
+#include "move.hh"
+#include "rule.hh"
 using namespace boost::program_options;
 
 void to_cout(const std::vector<std::string> &v)
@@ -42,6 +42,14 @@ int main(int argc, char *argv[])
         std::cout << "\npath to a perft file: " << vm["perft"].as<std::string>() << "\n\n";
 
     board::Chessboard cb;
+    cb.print_board();
+    uint64_t knight_attacks = generate_pawn_attacks(cb, board::Color::BLACK);
+    board::print_BitBoard(knight_attacks);
+    std::vector<board::Move> moves;
+    generate_pawn_moves(cb, board::Color::WHITE, moves);
+    for (auto i = moves.begin(); i != moves.end(); i++)
+        (*i).pretty();
+    cb.do_move(moves[0]);
     cb.print_board();
     return 0;
 }

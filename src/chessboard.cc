@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "chessboard.hh"
 
 namespace board
@@ -29,7 +27,7 @@ namespace board
         board_filler(&(this->boards_), 63, 56);
         board_filler(&(this->boards_), 61, 58);
         board_filler(&(this->boards_), 62, 57);
-        
+
         uint64_t res = 0;
         for (uint64_t j = 1L << 55; j > 1L << 47; j >>= 1)
             res |= j;
@@ -87,6 +85,55 @@ namespace board
             count++;
         }
         std::cout << std::endl;
+    }
+    std::vector<Move> Chessboard::generate_legal_moves()
+    {
+        Color color = this->white_turn_ ? board::Color::WHITE : board::Color::BLACK;
+        std::vector<Move> res;
+        generate_knight_moves(*this, color, res);
+        generate_pawn_moves(*this, color, res);
+        return res;  
+    }
+    bool Chessboard::is_move_legal(Move move)
+    {
+        std::vector<Move> leg_moves = generate_legal_moves();
+        for (auto i = leg_moves.begin(); i != leg_moves.end(); i++)
+            if (move.from_ == (*i).from_ && move.to_ == (*i).to_)
+                return true;
+        return false;
+    }
+    void Chessboard::do_move(Move move)
+    {
+        if (!is_move_legal(move))
+            return;
+
+        int val = white_turn_ ? 0 : 6;
+        int index = static_cast<int>(move.piece_) + val;
+        
+        /*int rank = static_cast<int>(move.from_.rank_get());
+        int file = static_cast<int>((move.from_.file_get()));
+        uint64_t dep = 1L << (rank * 8 + file % 8);
+        
+        int rankto = static_cast<int>(move.to_.rank_get());
+        int fileto = static_cast<int>((move.to_.file_get()));     
+        std:: cout << rankto << " " << fileto << " " << (rankto * 8 + fileto % 8) << "\n";           
+        uint64_t arr = 1L << (rankto * 8 + fileto % 8);
+        
+        print_BitBoard(dep);
+        print_BitBoard(arr);  */
+        std::cout << ((static_cast<int>(move.from_.rank_get()) + 1) * (static_cast<int>(move.from_.file_get()) + 1)) << std::endl;                                                    
+        this->boards_[index + 1] -= 1L << ((static_cast<int>(move.from_.rank_get()) + 1) * (static_cast<int>(move.from_.file_get()) + 1));
+        this->boards_[index + 1] += 1L << ((static_cast<int>(move.from_.rank_get()) + 1) * (static_cast<int>(move.from_.file_get()) + 1));
+
+        /*val = white_turn_ ? 6 : 0;             
+        for (auto i = 0 + val; i < 6 + val; i++)
+        {
+            if (this->boards_[i] & arr)
+            {
+                this->boards_[i] &= ~arr;
+                break;
+            }
+        }  */         
     }
 }
 

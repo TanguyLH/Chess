@@ -66,9 +66,8 @@ namespace board
         }
         return res;
     }        
-    std::vector<Move> generate_pawn_moves(Chessboard board, Color color)
+    void generate_pawn_moves(Chessboard board, Color color, std::vector<Move> &res)
     {
-        std::vector<Move> res;
         uint64_t bitb = color == board::Color::WHITE ? board.boards_[4] : board.boards_[10];
         while (bitb)
         {
@@ -138,7 +137,6 @@ namespace board
             
             bitb -= piece;
         } 
-        return res;      
     }
     
     uint64_t generate_knight_attacks(Chessboard board, Color color)
@@ -195,9 +193,8 @@ namespace board
         }
         return res;
     }
-    std::vector<Move> generate_knight_moves(Chessboard board, Color color)
+    void generate_knight_moves(Chessboard board, Color color, std::vector<Move> &res)
     {
-        std::vector<Move> res;
         uint64_t bitb = color == board::Color::WHITE ? board.boards_[3] : board.boards_[9];
         while (bitb)
         {
@@ -275,7 +272,6 @@ namespace board
             }
             bitb -= piece;
         }
-        return res;
     }
 
 }

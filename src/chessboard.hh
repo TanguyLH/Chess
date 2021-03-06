@@ -1,10 +1,13 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
 
 #include "color.hh"
 #include "piece-type.hh"
 #include "position.hh" 
+#include "move.hh"
+#include "rule.hh"
 
 namespace board
 {
@@ -13,11 +16,11 @@ namespace board
     public:
         Chessboard();
         Chessboard(std::string fen_string);
-        /*
+
         std::vector<Move> generate_legal_moves();
         bool is_move_legal(Move move);
         void do_move(Move move);
-        */
+        
         bool is_check();
         bool is_checkmate();
         bool is_draw();
@@ -31,5 +34,7 @@ namespace board
         bool black_king_castling_;
         bool black_queen_castling_;
         std::vector<uint64_t> boards_;
+        uint64_t w_attack;
+        uint64_t b_attack;
     };
 }
