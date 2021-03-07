@@ -14,9 +14,10 @@ namespace board
     {
         this->turn_ = 0;
         this->white_turn_ = true;
-        this->white_king_castling_ = false;
-        this->white_queen_castling_ = false;
-        this->black_king_castling_ = false;
+        this->white_king_castling_ = true;
+        this->white_queen_castling_ = true;
+        this->black_king_castling_ = true;
+        this->black_queen_castling_ = true;
 
         this->boards_.push_back(8);
         this->boards_.push_back(129);
@@ -36,7 +37,7 @@ namespace board
         this->boards_.push_back(res);
         board_filler(this->boards_, 59, -1);
         this->pins_ = 0ULL;
-        this->en_passant = 0;
+        this->en_passant = 0ULL;
     }
 
     void Chessboard::print_board()
@@ -101,12 +102,13 @@ namespace board
     {
         this->turn_ = 0;
         this->white_turn_ = true;
-        this->white_king_castling_ = false;
-        this->white_queen_castling_ = false;
-        this->black_king_castling_ = false;
-
+        this->white_king_castling_ = true;
+        this->white_queen_castling_ = true;
+        this->black_king_castling_ = true;
+        this->black_queen_castling_ = true;
         this->boards_ = boards;
         this->pins_ = find_absolute_pins(*this);
+        this->en_passant = 0ULL;
     }
 
     std::vector<Move> Chessboard::generate_legal_moves()
