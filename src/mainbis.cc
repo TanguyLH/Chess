@@ -29,11 +29,10 @@ int main(void)
     std::vector<std::string> listener_paths;
     listener_paths.push_back("./tests/libbasic-output.so");
     listener_paths.push_back("./tests/libpretty-output.so");
-    auto game_tracer = new board::GameTracer("", listener_paths);
+    board::GameTracer game_tracer("", listener_paths);
 
-    game_tracer->play_game();
+    game_tracer.play_game();
 
-    delete game_tracer;
     /*std::vector<uint64_t> boards;
     // WHITE QUEEN e8
     boards.push_back(576460752303423488ULL);

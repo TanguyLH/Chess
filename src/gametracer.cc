@@ -34,8 +34,8 @@ namespace board
                 continue;
             }
 
-            void *(*create)() = reinterpret_cast<void *(*)()>(createFunc);
-            auto l = static_cast<listener::Listener *>(create());
+            //listener::Listener *(*create)() = reinterpret_cast<listener::Listener *(*)()>(createFunc)();
+            listener::Listener *l = reinterpret_cast<listener::Listener *(*)()>(createFunc)();
             this->listeners_.push_back(l);
         }
 
@@ -43,22 +43,30 @@ namespace board
 
     GameTracer::~GameTracer()
     {
+        std::cerr << "GameTracer: Deleting listeners" << std::endl;
+        for (auto it : this->listeners_)
+        {
+            std::cout << "tst" << std::endl;
+            delete it;
+        }
+
         std::cerr << "GameTracer: Dlclosing libs" << std::endl;
         for (auto lib : this->libs_)
         {
             if (lib != nullptr)
+            {
                 dlclose(lib);
+            }
         }
-
-        /*std::cerr << "GameTracer: Deleting listeners" << std::endl;
-        for (auto it = this->listeners_.begin(); it != this->listeners_.end(); ++it)
+        /*for (auto it = this->listeners_.begin(); it != this->listeners_.end(); ++it)
         {
             std::cerr << "hih";
-            listener::Listener *tmp = *it;
+            //listener::Listener *tmp = *it;
             std::cerr << "hey";
-            delete tmp;
+            (*it)->~Listener();
+            //delete tmp;
             std::cerr << "hoh";
-            tmp = nullptr;
+            //tmp = nullptr;
         }*/
     }
 
