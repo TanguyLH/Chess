@@ -25,6 +25,7 @@ namespace board
         bool is_checkmate();
         bool is_draw();
         void print_board(void);
+        bool is_check_compatible(Move move, uint64_t piece);
         // std::pair<PieceType, Color> operator[](Position position);
         
         unsigned int turn_;
@@ -33,6 +34,7 @@ namespace board
         bool white_queen_castling_;
         bool black_king_castling_;
         bool black_queen_castling_;
+        bool in_check = false;
         std::vector<uint64_t> boards_;
         uint64_t pins_;
         uint64_t en_passant;

@@ -179,52 +179,68 @@ namespace board
                 {
                     bit_pos = (piece << 1) & board.en_passant;
                     if (!((bit_pos << 9) & all_occ))
-                        res.push_back(Move(pos,
-                                           Position(static_cast<File>(x - 1),
-                                                    static_cast<Rank>(y + 1)),
-                                           board::PieceType::PAWN, color));
+                    {
+                        auto mv = Move(pos, Position(static_cast<File>(x - 1),
+                                                     static_cast<Rank>(y + 1)),
+                                       board::PieceType::PAWN, color);
+                        if (board.is_check_compatible(mv, piece))
+                            res.push_back(mv);
+                    }
                 }
                 if ((piece >> 1) & board.en_passant)
                 {
                     bit_pos = (piece >> 1) & board.en_passant;
                     if (!((bit_pos << 7) & all_occ))
-                        res.push_back(Move(pos,
-                                           Position(static_cast<File>(x + 1),
-                                                    static_cast<Rank>(y + 1)),
-                                           board::PieceType::PAWN, color));
+                    {
+                        auto mv = Move(pos, Position(static_cast<File>(x + 1),
+                                                     static_cast<Rank>(y + 1)),
+                                       board::PieceType::PAWN, color);
+                        if (board.is_check_compatible(mv, piece))
+                            res.push_back(mv);
+                    }
                 }
                 // capture move
                 if (x < 7)
                 {
                     bit_pos = piece << 7;
                     if (bit_pos & adv_col_occ)
-                        res.push_back(Move(pos,
-                                           Position(static_cast<File>(x + 1),
-                                                    static_cast<Rank>(y + 1)),
-                                           board::PieceType::PAWN, color));
+                    {
+                        auto mv = Move(pos, Position(static_cast<File>(x + 1),
+                                                     static_cast<Rank>(y + 1)),
+                                       board::PieceType::PAWN, color);
+                        if (board.is_check_compatible(mv, piece))
+                            res.push_back(mv);
+                    }
                 }
                 if (x > 0)
                 {
                     bit_pos = piece << 9;
                     if (bit_pos & adv_col_occ)
-                        res.push_back(Move(pos,
-                                           Position(static_cast<File>(x - 1),
-                                                    static_cast<Rank>(y + 1)),
-                                           board::PieceType::PAWN, color));
+                    {
+                        auto mv = Move(pos, Position(static_cast<File>(x - 1),
+                                                     static_cast<Rank>(y + 1)),
+                                       board::PieceType::PAWN, color);
+                        if (board.is_check_compatible(mv, piece))
+                            res.push_back(mv);
+                    }
                 }
                 // deplacement move
                 bit_pos = piece << 8;
                 if (!(bit_pos & all_occ))
                 {
-                    res.push_back(Move(pos,
-                                       Position(static_cast<File>(x),
-                                                static_cast<Rank>(y + 1)),
-                                       board::PieceType::PAWN, color));
+                    auto mv = Move(pos, Position(static_cast<File>(x),
+                                                 static_cast<Rank>(y + 1)),
+                                   board::PieceType::PAWN, color);
+                    if (board.is_check_compatible(mv, piece))
+                        res.push_back(mv);
                     if (y == 1 && !((bit_pos <<= 8) & all_occ))
-                        res.push_back(Move(pos,
-                                           Position(static_cast<File>(x),
-                                                    static_cast<Rank>(y + 2)),
-                                           board::PieceType::PAWN, color));
+                    {
+                        mv = Move(pos, Position(static_cast<File>(x),
+                                                 static_cast<Rank>(y + 2)),
+                                    board::PieceType::PAWN, color);
+                        if (board.is_check_compatible(mv, piece))
+                            res.push_back(mv);
+                    }
                 }
             }
             else
@@ -234,33 +250,43 @@ namespace board
                 {
                     bit_pos = piece >> 7;
                     if (bit_pos & adv_col_occ)
-                        res.push_back(Move(pos,
-                                           Position(static_cast<File>(x - 1),
-                                                    static_cast<Rank>(y - 1)),
-                                           board::PieceType::PAWN, color));
+                    {
+                        auto mv = Move(pos, Position(static_cast<File>(x - 1),
+                                                 static_cast<Rank>(y - 1)),
+                                   board::PieceType::PAWN, color);
+                        if (board.is_check_compatible(mv, piece))
+                            res.push_back(mv);
+                    }
                 }
                 if (x < 7)
                 {
                     bit_pos = piece >> 9;
                     if (bit_pos & adv_col_occ)
-                        res.push_back(Move(pos,
-                                           Position(static_cast<File>(x + 1),
-                                                    static_cast<Rank>(y - 1)),
-                                           board::PieceType::PAWN, color));
+                    {
+                        auto mv = Move(pos, Position(static_cast<File>(x + 1),
+                                                 static_cast<Rank>(y - 1)),
+                                   board::PieceType::PAWN, color);
+                        if (board.is_check_compatible(mv, piece))
+                            res.push_back(mv);
+                    }
                 }
                 // deplacement move
                 bit_pos = piece >> 8;
                 if (!(bit_pos & all_occ))
                 {
-                    res.push_back(Move(pos,
-                                       Position(static_cast<File>(x),
-                                                static_cast<Rank>(y - 1)),
-                                       board::PieceType::PAWN, color));
+                    auto mv = Move(pos, Position(static_cast<File>(x),
+                                                 static_cast<Rank>(y - 1)),
+                                   board::PieceType::PAWN, color);
+                    if (board.is_check_compatible(mv, piece))
+                        res.push_back(mv);
                     if (y == 6 && !((bit_pos >>= 8) & all_occ))
-                        res.push_back(Move(pos,
-                                           Position(static_cast<File>(x),
-                                                    static_cast<Rank>(y - 2)),
-                                           board::PieceType::PAWN, color));
+                    {
+                        auto mv = Move(pos, Position(static_cast<File>(x),
+                                                 static_cast<Rank>(y - 2)),
+                                   board::PieceType::PAWN, color);
+                        if (board.is_check_compatible(mv, piece))
+                            res.push_back(mv);
+                    }
                 }
             }
 
@@ -342,73 +368,97 @@ namespace board
             {
                 bit_pos = (piece) << 15;
                 if ((bit_pos & same_col_occ) == 0)
-                    res.push_back(Move(pos,
-                                       Position(static_cast<File>(x + 1),
-                                                static_cast<Rank>(y + 2)),
-                                       board::PieceType::KNIGHT, color));
+                {
+                    auto mv = Move(pos, Position(static_cast<File>(x + 1),
+                                                 static_cast<Rank>(y + 2)),
+                                   board::PieceType::KNIGHT, color);
+                    if (board.is_check_compatible(mv, piece))
+                        res.push_back(mv);
+                }
             }
             if (x < 6 && y < 7)
             {
                 bit_pos = (piece) << 6;
                 if ((bit_pos & same_col_occ) == 0)
-                    res.push_back(Move(pos,
-                                       Position(static_cast<File>(x + 2),
-                                                static_cast<Rank>(y + 1)),
-                                       board::PieceType::KNIGHT, color));
+                {
+                    auto mv = Move(pos, Position(static_cast<File>(x + 2),
+                                                 static_cast<Rank>(y + 1)),
+                                   board::PieceType::KNIGHT, color);
+                    if (board.is_check_compatible(mv, piece))
+                        res.push_back(mv);
+                }
             }
             if (x < 6 && y > 0)
             {
                 bit_pos = (piece) >> 10;
                 if ((bit_pos & same_col_occ) == 0)
-                    res.push_back(Move(pos,
-                                       Position(static_cast<File>(x + 2),
-                                                static_cast<Rank>(y - 1)),
-                                       board::PieceType::KNIGHT, color));
+                {
+                    auto mv = Move(pos, Position(static_cast<File>(x + 2),
+                                                 static_cast<Rank>(y - 1)),
+                                   board::PieceType::KNIGHT, color);
+                    if (board.is_check_compatible(mv, piece))
+                        res.push_back(mv);
+                }
             }
             if (x < 6 && y > 1)
             {
                 bit_pos = (piece) >> 17;
                 if ((bit_pos & same_col_occ) == 0)
-                    res.push_back(Move(pos,
-                                       Position(static_cast<File>(x + 1),
-                                                static_cast<Rank>(y - 2)),
-                                       board::PieceType::KNIGHT, color));
+                {
+                    auto mv = Move(pos, Position(static_cast<File>(x + 1),
+                                                 static_cast<Rank>(y - 2)),
+                                   board::PieceType::KNIGHT, color);
+                    if (board.is_check_compatible(mv, piece))
+                        res.push_back(mv);
+                }
             }
             if (x > 0 && y < 6)
             {
                 bit_pos = (piece) << 17;
                 if ((bit_pos & same_col_occ) == 0)
-                    res.push_back(Move(pos,
-                                       Position(static_cast<File>(x - 1),
-                                                static_cast<Rank>(y + 2)),
-                                       board::PieceType::KNIGHT, color));
+                {
+                    auto mv = Move(pos, Position(static_cast<File>(x - 1),
+                                                 static_cast<Rank>(y + 2)),
+                                   board::PieceType::KNIGHT, color);
+                    if (board.is_check_compatible(mv, piece))
+                        res.push_back(mv);
+                }
             }
             if (x > 1 && y < 7)
             {
                 bit_pos = (piece) << 10;
                 if ((bit_pos & same_col_occ) == 0)
-                    res.push_back(Move(pos,
-                                       Position(static_cast<File>(x - 2),
-                                                static_cast<Rank>(y + 1)),
-                                       board::PieceType::KNIGHT, color));
+                {
+                    auto mv = Move(pos, Position(static_cast<File>(x - 2),
+                                                 static_cast<Rank>(y + 1)),
+                                   board::PieceType::KNIGHT, color);
+                    if (board.is_check_compatible(mv, piece))
+                        res.push_back(mv);
+                }
             }
             if (x > 1 && y > 0)
             {
                 bit_pos = (piece) >> 6;
                 if ((bit_pos & same_col_occ) == 0)
-                    res.push_back(Move(pos,
-                                       Position(static_cast<File>(x - 2),
-                                                static_cast<Rank>(y - 1)),
-                                       board::PieceType::KNIGHT, color));
+                {
+                    auto mv = Move(pos, Position(static_cast<File>(x - 2),
+                                                 static_cast<Rank>(y - 1)),
+                                   board::PieceType::KNIGHT, color);
+                    if (board.is_check_compatible(mv, piece))
+                        res.push_back(mv);
+                }
             }
             if (x > 0 && y > 1)
             {
                 bit_pos = (piece) >> 15;
                 if ((bit_pos & same_col_occ) == 0)
-                    res.push_back(Move(pos,
-                                       Position(static_cast<File>(x - 1),
-                                                static_cast<Rank>(y - 2)),
-                                       board::PieceType::KNIGHT, color));
+                {
+                    auto mv = Move(pos, Position(static_cast<File>(x - 1),
+                                                 static_cast<Rank>(y - 2)),
+                                   board::PieceType::KNIGHT, color);
+                    if (board.is_check_compatible(mv, piece))
+                        res.push_back(mv);
+                }
             }
             bitb -= piece;
         }
@@ -554,10 +604,11 @@ namespace board
                     curx--;
                     if ((it & ami) > 0)
                         break;
-                    res.push_back(Move(pos,
-                                       Position(static_cast<File>(curx),
-                                                static_cast<Rank>(cury)),
-                                       type, color));
+                    auto mv = Move(pos, Position(static_cast<File>(curx),
+                                                 static_cast<Rank>(cury)),
+                                   type, color);
+                    if (board.is_check_compatible(mv, cur))
+                        res.push_back(mv);
                     if ((it & ennemi) > 0)
                         break;
                 } while ((it & right) == 0 || it == 0);
@@ -574,10 +625,11 @@ namespace board
                     curx++;
                     if ((it & ami) > 0)
                         break;
-                    res.push_back(Move(pos,
-                                       Position(static_cast<File>(curx),
-                                                static_cast<Rank>(cury)),
-                                       type, color));
+                    auto mv = Move(pos, Position(static_cast<File>(curx),
+                                                 static_cast<Rank>(cury)),
+                                   type, color);
+                    if (board.is_check_compatible(mv, cur))
+                        res.push_back(mv);
                     if ((it & ennemi) > 0)
                         break;
                 } while ((it & right) == 0 && it > 0);
@@ -592,10 +644,11 @@ namespace board
                 cury++;
                 if ((it & ami) > 0)
                     break;
-                res.push_back(Move(
-                    pos,
-                    Position(static_cast<File>(curx), static_cast<Rank>(cury)),
-                    type, color));
+                auto mv = Move(pos, Position(static_cast<File>(curx),
+                                             static_cast<Rank>(cury)),
+                                type, color);
+                if (board.is_check_compatible(mv, cur))
+                    res.push_back(mv);
                 if ((it & ennemi) > 0)
                     break;
             } while ((it & topdown) == 0 && it);
@@ -609,10 +662,11 @@ namespace board
                 cury--;
                 if ((it & ami) > 0)
                     break;
-                res.push_back(Move(
-                    pos,
-                    Position(static_cast<File>(curx), static_cast<Rank>(cury)),
-                    type, color));
+                auto mv = Move(pos, Position(static_cast<File>(curx),
+                                             static_cast<Rank>(cury)),
+                                type, color);
+                if (board.is_check_compatible(mv, cur))
+                    res.push_back(mv);
                 if ((it & ennemi) > 0)
                     break;
             } while ((it & topdown) == 0 && it);
@@ -755,10 +809,11 @@ namespace board
                     cury++;
                     if ((it & ami) > 0)
                         break;
-                    res.push_back(Move(pos,
-                                       Position(static_cast<File>(curx),
-                                                static_cast<Rank>(cury)),
-                                       type, color));
+                    auto mv = Move(pos, Position(static_cast<File>(curx),
+                                                 static_cast<Rank>(cury)),
+                                   type, color);
+                    if (board.is_check_compatible(mv, cur))
+                        res.push_back(mv);
                     if ((it & ennemi) > 0)
                         break;
                 } while ((it & TOPLEFT) == 0 || it == 0);
@@ -779,10 +834,11 @@ namespace board
                     cury++;
                     if ((it & ami) > 0)
                         break;
-                    res.push_back(Move(pos,
-                                       Position(static_cast<File>(curx),
-                                                static_cast<Rank>(cury)),
-                                       type, color));
+                    auto mv = Move(pos, Position(static_cast<File>(curx),
+                                                 static_cast<Rank>(cury)),
+                                   type, color);
+                    if (board.is_check_compatible(mv, cur))
+                        res.push_back(mv);
                     if ((it & ennemi) > 0)
                         break;
                 } while ((it & TOPRIGHT) == 0 && it > 0);
@@ -803,10 +859,11 @@ namespace board
                     cury--;
                     if ((it & ami) > 0)
                         break;
-                    res.push_back(Move(pos,
-                                       Position(static_cast<File>(curx),
-                                                static_cast<Rank>(cury)),
-                                       type, color));
+                    auto mv = Move(pos, Position(static_cast<File>(curx),
+                                                 static_cast<Rank>(cury)),
+                                   type, color);
+                    if (board.is_check_compatible(mv, cur))
+                        res.push_back(mv);
                     if ((it & ennemi) > 0)
                         break;
                 } while ((it & BOTLEFT) == 0 && it);
@@ -826,10 +883,11 @@ namespace board
                     cury--;
                     if ((it & ami) > 0)
                         break;
-                    res.push_back(Move(pos,
-                                       Position(static_cast<File>(curx),
-                                                static_cast<Rank>(cury)),
-                                       type, color));
+                    auto mv = Move(pos, Position(static_cast<File>(curx),
+                                                 static_cast<Rank>(cury)),
+                                   type, color);
+                    if (board.is_check_compatible(mv, cur))
+                        res.push_back(mv);
                     if ((it & ennemi) > 0)
                         break;
                 } while ((it & BOTRIGHT) == 0 && it);
