@@ -13,11 +13,11 @@ namespace board
         public:
             Position from_;
             Position to_;
-
             PieceType piece_;
             Color color_;
+            opt_piecetype_t promotion_;
 
-            Move(Position from, Position to, PieceType piece, Color color);
+            Move(Position from, Position to, PieceType piece, Color color, opt_piecetype_t promotion);
             void pretty();
             short board_index() const;
 
