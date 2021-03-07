@@ -19,7 +19,7 @@ namespace board
         Chessboard(std::vector<uint64_t> boards);
         std::vector<Move> generate_legal_moves();
         bool is_move_legal(Move move);
-        void do_move(Move move);
+        void do_move(Move &move);
         
         bool is_check();
         bool is_checkmate();

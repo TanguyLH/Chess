@@ -7,12 +7,6 @@ namespace board
         : from_(from), to_(to), piece_(piece), color_(color), promotion_(promotion)
     {}
 
-    /*Move::Move(PgnMove pgn)
-    {
-        this->from_ = pgn.start_;
-        this->to_ = pgn.
-    }*/
-
     short Move::board_index() const
     {
         return static_cast<short>(piece_)

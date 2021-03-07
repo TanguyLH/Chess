@@ -125,7 +125,7 @@ namespace board
     {
         std::vector<Move> leg_moves = generate_legal_moves();
         for (auto i = leg_moves.begin(); i != leg_moves.end(); i++)
-            if (move.from_ == (*i).from_ && move.to_ == (*i).to_)
+            if (move.from_ == i->from_ && move.to_ == i->to_)
                 return true;
         return false;
     }
@@ -141,7 +141,7 @@ namespace board
         return res;
     }
 
-    void Chessboard::do_move(Move move)
+    void Chessboard::do_move(Move &move)
     {
         if (!is_move_legal(move))
             return;
@@ -168,6 +168,12 @@ namespace board
 
         this->boards_[index] |= arr;
         this->boards_[index] &= ~dep;
+
+        if (piece_type == 4 && to_rank == 0 && move.promotion_ != std::nullopt)
+        {
+            this->boards_[index] &= ~arr;
+            this->boards_[static_cast<int>(*(move.promotion_)) + turn_offset] |= arr;
+        }
 
         turn_offset = 6 - turn_offset;
         if (from_file != to_file && !(arr & adv_col_occ))
