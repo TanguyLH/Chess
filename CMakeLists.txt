@@ -13,6 +13,8 @@ set(OPT_FLAGS
 set(SRC_ENGINE
     "src/chessboard.cc"
     "src/generate_move.cc"
+    "src/move.cc"
+    "src/rule.cc"
 )
 
 # Directories containing headers must be specified in the include_directories()
@@ -59,7 +61,7 @@ target_link_libraries(chessengine PRIVATE ${LIBRARIES})
 
 # TESTS
 # Check if GTest is installed
-find_package(GTest)
+# find_package(GTest)
 
 # If it is, create a dedicated target "tests"
 # if(GTest_FOUND)

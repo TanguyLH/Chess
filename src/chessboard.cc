@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "chessboard.hh"
 #include "generate_move.hh"
 
@@ -36,7 +34,7 @@ namespace board
         for (uint64_t j = 1L << 55; j > 1L << 47; j >>= 1)
             res |= j;
         this->boards_.push_back(res);
-
+        this->boards_[10] += (1L << 17);
         board_filler(this->boards_, 59, -1);
         this->pins_ = 0ULL;
     }
@@ -103,5 +101,51 @@ namespace board
         this->boards_ = boards;        
         this->pins_ = find_absolute_pins(*this);
     }
-}
+  
+    std::vector<Move> Chessboard::generate_legal_moves()
+    {
+        Color color = this->white_turn_ ? board::Color::WHITE : board::Color::BLACK;
+        std::vector<Move> res;
+        generate_knight_moves(*this, color, res);
+        generate_pawn_moves(*this, color, res);
+        return res;  
+    }
+  
+    bool Chessboard::is_move_legal(Move move)
+    {
+        std::vector<Move> leg_moves = generate_legal_moves();
+        for (auto i = leg_moves.begin(); i != leg_moves.end(); i++)
+            if (move.from_ == (*i).from_ && move.to_ == (*i).to_)
+                return true;
+        return false;
+    }
+  
+    void Chessboard::do_move(Move move)
+    {
+        if (!is_move_legal(move))
+            return;
 
+        int val = white_turn_ ? 0 : 6;
+        int index = static_cast<int>(move.piece_) + val;
+        
+        int rank = static_cast<int>(move.from_.rank_get());
+        int file = static_cast<int>((move.from_.file_get()));
+        uint64_t dep = 1L << (rank * 8 + (7 - file));
+        
+        int rankto = static_cast<int>(move.to_.rank_get());
+        int fileto = static_cast<int>((move.to_.file_get()));     
+        uint64_t arr = 1L << (rankto * 8 + (7 - fileto));
+        this->boards_[index] &= ~dep;
+        this->boards_[index] |= arr;
+
+        val = white_turn_ ? 6 : 0;             
+        for (auto i = 0 + val; i < 6 + val; i++)
+        {
+            if (this->boards_[i] & arr)
+            {
+                this->boards_[i] &= ~arr;
+                break;
+            }
+        }           
+    }
+}
