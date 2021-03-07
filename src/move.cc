@@ -1,12 +1,17 @@
 #include "move.hh"
 
-
 namespace board
 {
 
-    Move::Move(Position from, Position to, PieceType piece, Color color)
-        : from_(from), to_(to), piece_(piece), color_(color)
+    Move::Move(Position from, Position to, PieceType piece, Color color, opt_piecetype_t promotion)
+        : from_(from), to_(to), piece_(piece), color_(color), promotion_(promotion)
     {}
+
+    /*Move::Move(PgnMove pgn)
+    {
+        this->from_ = pgn.start_;
+        this->to_ = pgn.
+    }*/
 
     short Move::board_index() const
     {
