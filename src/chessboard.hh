@@ -12,6 +12,8 @@
 
 namespace board
 {
+    class GameTracer;
+
     class Chessboard
     {
     public:

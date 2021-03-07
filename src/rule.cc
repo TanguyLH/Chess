@@ -907,4 +907,167 @@ namespace board
         generate_bishop_moves(board, color, res, true);
     }
 
+    void generate_king_moves(Chessboard board, Color color,
+                             std::vector<Move> &res)
+    {
+        uint64_t bitb =
+            color == board::Color::WHITE ? board.boards_[5] : board.boards_[11];
+        uint64_t tmp = log2(bitb);
+        uint64_t piece = 1L << tmp;
+
+        int x = 7 - (int)log2(piece) % 8;
+        int y = log2(piece) / 8;
+
+        Position pos = Position(static_cast<File>(x), static_cast<Rank>(y));
+        uint64_t same_col_occ =
+            get_occupancy(board.boards_, color == board::Color::WHITE);
+
+        uint64_t bit_pos = 0;
+
+        Color enemy_col = color == Color::WHITE ? Color::WHITE : Color::BLACK;
+
+        uint64_t attackboard = generate_rook_attacks(board, enemy_col);
+        attackboard |= generate_bishop_attacks(board, enemy_col);
+        attackboard |= generate_queen_attacks(board, enemy_col);
+        attackboard |= generate_pawn_attacks(board, enemy_col);
+        attackboard |= generate_knight_attacks(board, enemy_col);
+        attackboard |= generate_king_attacks(board, enemy_col);
+
+        if (x > 0 && y < 7)
+        {
+            bit_pos = (piece) << 9;
+            if ((bit_pos & same_col_occ) == 0)
+            {
+                auto mv = Move(pos, Position(static_cast<File>(x - 1),
+                static_cast<Rank>(y + 1)), board::PieceType::KNIGHT, color, std::nullopt);
+                res.push_back(mv);
+            }           
+        }
+        if (y < 7)
+        {
+            bit_pos = (piece) << 8;
+            if ((bit_pos & same_col_occ) == 0)
+            {
+                auto mv = Move(pos, Position(static_cast<File>(x),
+                static_cast<Rank>(y + 1)), board::PieceType::KNIGHT, color, std::nullopt);
+                res.push_back(mv);
+            }           
+        }
+        if (x < 7 && y < 7)
+        {
+            bit_pos = (piece) << 7;
+            if ((bit_pos & same_col_occ) == 0)
+            {
+                auto mv = Move(pos, Position(static_cast<File>(x + 1),
+                static_cast<Rank>(y + 1)), board::PieceType::KNIGHT, color, std::nullopt);
+                res.push_back(mv);
+            }           
+        }
+        if (x > 0)
+        {
+            bit_pos = (piece) << 1;
+            if ((bit_pos & same_col_occ) == 0)
+            {
+                auto mv = Move(pos, Position(static_cast<File>(x - 1),
+                static_cast<Rank>(y)), board::PieceType::KNIGHT, color, std::nullopt);
+                res.push_back(mv);
+            }           
+        }
+        if (x < 7)
+        {
+            bit_pos = (piece) >> 1;
+            if ((bit_pos & same_col_occ) == 0)
+            {
+                auto mv = Move(pos, Position(static_cast<File>(x + 1),
+                static_cast<Rank>(y)), board::PieceType::KNIGHT, color, std::nullopt);
+                res.push_back(mv);
+            }           
+        }
+        if (x > 0 && y > 0)
+        {
+            bit_pos = (piece) >> 7;
+            if ((bit_pos & same_col_occ) == 0)
+            {
+                auto mv = Move(pos, Position(static_cast<File>(x - 1),
+                static_cast<Rank>(y - 1)), board::PieceType::KNIGHT, color, std::nullopt);
+                res.push_back(mv);
+            }           
+        }
+        if (y > 0)
+        {
+            bit_pos = (piece) >> 8;
+            if ((bit_pos & same_col_occ) == 0)
+            {
+                auto mv = Move(pos, Position(static_cast<File>(x),
+                static_cast<Rank>(y - 1)), board::PieceType::KNIGHT, color, std::nullopt);
+                res.push_back(mv);
+            }           
+        }
+        if (x < 7 && y > 0)
+        {
+            bit_pos = (piece) >> 9;
+            if ((bit_pos & same_col_occ) == 0)
+            {
+                auto mv = Move(pos, Position(static_cast<File>(x + 1),
+                static_cast<Rank>(y - 1)), board::PieceType::KNIGHT, color, std::nullopt);
+                res.push_back(mv);
+            }           
+        }
+    }
+
+    uint64_t generate_king_attacks(Chessboard board, Color color)
+    {
+        uint64_t res = 0;
+        uint64_t bitb =
+            color == board::Color::WHITE ? board.boards_[5] : board.boards_[11];
+        uint64_t bit_pos = 0;
+        
+        //NW
+        uint64_t mask = 0b01111111011111110111111101111111011111110111111101111111;
+        bit_pos = (bitb & mask);
+        if (bit_pos)
+            res |= bit_pos << 9;
+        //N
+        mask = 0b11111111111111111111111111111111111111111111111111111111;
+        bit_pos = (bitb & mask);
+        if (bit_pos)
+            res |= bit_pos << 8;
+        //NE
+        mask = 0b11111110111111101111111011111110111111101111111011111110;
+        bit_pos = (bitb & mask);
+        if (bit_pos)
+            res |= bit_pos << 7;
+        //W
+        mask =
+            0b0111111101111111011111110111111101111111011111110111111101111111;
+        bit_pos = (bitb & mask);
+        if (bit_pos)
+            res |= bit_pos << 1;
+        //E
+        mask =
+            0b1111111011111110111111101111111011111110111111101111111011111110;
+        bit_pos = (bitb & mask);
+        if (bit_pos)
+            res |= bit_pos >> 1;
+        //SW
+        mask = 0b0111111101111111011111110111111101111111011111110111111100000000;
+        bit_pos = (bitb & mask);
+        if (bit_pos)
+            res |= bit_pos >> 7;
+        //S
+        mask =
+            0b1111111111111111111111111111111111111111111111111111111100000000;
+        bit_pos = (bitb & mask);
+        if (bit_pos)
+            res |= bit_pos >> 8;
+        //SE
+        mask =
+            0b1111111011111110111111101111111011111110111111101111111000000000;
+        bit_pos = (bitb & mask);
+        if (bit_pos)
+            res |= bit_pos >> 9;
+
+        return res;
+    }
+
 } // namespace board

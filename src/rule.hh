@@ -31,6 +31,9 @@ namespace board
     void generate_queen_moves(Chessboard board, Color color,
                              std::vector<Move> &res);
 
+    uint64_t generate_king_attacks(Chessboard board, Color color);
+    void generate_king_moves(Chessboard board, Color color,
+                             std::vector<Move> &res);
 }
 
 

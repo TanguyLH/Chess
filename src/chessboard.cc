@@ -38,6 +38,8 @@ namespace board
         board_filler(this->boards_, 59, -1);
         this->pins_ = 0ULL;
         this->en_passant = 0ULL;
+        /*for (auto it : this->listen)
+        on_piece_moved(move.type_, move.from_, move.to_)*/
     }
 
     void Chessboard::print_board()

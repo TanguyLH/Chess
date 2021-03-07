@@ -9,6 +9,7 @@
 
 namespace board
 {
+    class Chessboard;
     class GameTracer
     {
     public:
