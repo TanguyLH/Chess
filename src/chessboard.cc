@@ -14,9 +14,10 @@ namespace board
     {
         this->turn_ = 0;
         this->white_turn_ = true;
-        this->white_king_castling_ = false;
-        this->white_queen_castling_ = false;
-        this->black_king_castling_ = false;
+        this->white_king_castling_ = true;
+        this->white_queen_castling_ = true;
+        this->black_king_castling_ = true;
+        this->black_queen_castling_ = true;
 
         this->boards_.push_back(8);
         this->boards_.push_back(129);
@@ -29,14 +30,14 @@ namespace board
         board_filler(this->boards_, 63, 56);
         board_filler(this->boards_, 61, 58);
         board_filler(this->boards_, 62, 57);
-        
+
         uint64_t res = 0;
         for (uint64_t j = 1L << 55; j > 1L << 47; j >>= 1)
             res |= j;
         this->boards_.push_back(res);
         board_filler(this->boards_, 59, -1);
         this->pins_ = 0ULL;
-        this->en_passant = 0;
+        this->en_passant = 0ULL;
     }
 
     void Chessboard::print_board()
@@ -94,14 +95,15 @@ namespace board
     {
         this->turn_ = 0;
         this->white_turn_ = true;
-        this->white_king_castling_ = false;
-        this->white_queen_castling_ = false;
-        this->black_king_castling_ = false;
-
+        this->white_king_castling_ = true;
+        this->white_queen_castling_ = true;
+        this->black_king_castling_ = true;
+        this->black_queen_castling_ = true;
         this->boards_ = boards;        
         this->pins_ = find_absolute_pins(*this);
+        this->en_passant = 0ULL;
     }
-  
+
     std::vector<Move> Chessboard::generate_legal_moves()
     {
         Color color = this->white_turn_ ? board::Color::WHITE : board::Color::BLACK;
@@ -110,7 +112,7 @@ namespace board
         generate_pawn_moves(*this, color, res);
         return res;  
     }
-  
+
     bool Chessboard::is_move_legal(Move move)
     {
         std::vector<Move> leg_moves = generate_legal_moves();
@@ -119,7 +121,7 @@ namespace board
                 return true;
         return false;
     }
-  
+
     uint64_t get_occupancy2(std::vector<uint64_t> boards, bool is_white)
     {
         uint64_t res = 0;
@@ -163,7 +165,7 @@ namespace board
             uint64_t tmp2 = (1L << (tmp - 8));
             this->boards_[4 + turn_offset] -= tmp2;
         }
-       
+
         for (auto i = turn_offset; i < 6 + turn_offset; i++)
         {
             if (this->boards_[i] & arr)

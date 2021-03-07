@@ -13,6 +13,7 @@ set(OPT_FLAGS
 set(SRC_ENGINE
     "src/chessboard.cc"
     "src/generate_move.cc"
+    "src/fen-parse.cc"
     "src/move.cc"
     "src/rule.cc"
 )
