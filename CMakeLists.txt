@@ -12,6 +12,7 @@ set(OPT_FLAGS
 # Put all your sources here EXCEPT YOUR MAIN.CC
 set(SRC_ENGINE
     "src/chessboard.cc"
+    "src/generate_move.cc"
     "src/move.cc"
     "src/rule.cc"
 )
