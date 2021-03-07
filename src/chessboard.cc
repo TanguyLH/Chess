@@ -125,21 +125,15 @@ namespace board
         if (!is_move_legal(move))
             return;
 
-        int val = white_turn_ ? 0 : 6;
-        int index = static_cast<int>(move.piece_) + val;
-        
-        int rank = static_cast<int>(move.from_.rank_get());
-        int file = static_cast<int>((move.from_.file_get()));
-        uint64_t dep = 1L << (rank * 8 + (7 - file));
-        
-        int rankto = static_cast<int>(move.to_.rank_get());
-        int fileto = static_cast<int>((move.to_.file_get()));     
-        uint64_t arr = 1L << (rankto * 8 + (7 - fileto));
+        int turn_offset = white_turn_ ? 0 : 6;
+        int index = static_cast<int>(move.piece_) + turn_offset;
+        uint64_t dep = 1L << (static_cast<int>(move.from_.rank_get()) * 8 + (7 - static_cast<int>((move.from_.file_get()))));
+        uint64_t arr = 1L << (static_cast<int>(move.to_.rank_get()) * 8 + (7 - static_cast<int>((move.to_.file_get()))));
         this->boards_[index] &= ~dep;
         this->boards_[index] |= arr;
 
-        val = white_turn_ ? 6 : 0;             
-        for (auto i = 0 + val; i < 6 + val; i++)
+        turn_offset = 6 - turn_offset;           
+        for (auto i = 0 + turn_offset; i < 6 + turn_offset; i++)
         {
             if (this->boards_[i] & arr)
             {

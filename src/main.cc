@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     generate_pawn_moves(cb, board::Color::WHITE, moves);
     for (auto i = moves.begin(); i != moves.end(); i++)
         (*i).pretty();
-    cb.do_move(moves[0]);
+    cb.do_move(moves[moves.size() - 3]);
     cb.print_board();
     return 0;
 }

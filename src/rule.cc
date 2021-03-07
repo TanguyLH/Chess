@@ -128,9 +128,7 @@ namespace board
                 {
                     res.push_back(Move(pos, Position(static_cast<File>(x), static_cast<Rank>(y - 1)), board::PieceType::PAWN, color));
                     if (y == 6 && !((bit_pos >>= 8) & all_occ))
-                    {
-                        res.push_back(Move(pos, Position(static_cast<File>(x), static_cast<Rank>(y - 2)), board::PieceType::PAWN, color));                         
-                    }
+                        res.push_back(Move(pos, Position(static_cast<File>(x), static_cast<Rank>(y - 2)), board::PieceType::PAWN, color));
                 }                
             }
             
@@ -144,12 +142,12 @@ namespace board
         uint64_t res = 0;
         uint64_t bitb = color == board::Color::WHITE ? board.boards_[3] : board.boards_[9];
         uint64_t bit_pos = 0;
+
         uint64_t mask = 0b011111110111111101111111011111110111111101111111;
         bit_pos = (bitb & mask);
         if (bit_pos)
-        {
             res |= bit_pos << 17;
-        }
+
         mask = 0b111111101111111011111110111111101111111011111110;                                                                                  
         bit_pos = (bitb & mask);
         if (bit_pos)
@@ -158,39 +156,33 @@ namespace board
         mask = 0b11111100111111001111110011111100111111001111110011111100;
         bit_pos = (bitb & mask);
         if (bit_pos)
-        {
             res |= bit_pos << 6;
-        }
+
         mask = 0b1111110011111100111111001111110011111100111111001111110000000000;
         bit_pos = (bitb & mask) ;
         if (bit_pos)
-        {
             res |= bit_pos >> 10;
-        }
+
         mask = 0b0011111100111111001111110011111100111111001111110011111100000000;
         bit_pos = (bitb & mask);
         if (bit_pos)
-        {
             res |= bit_pos >> 6;
-        }
+
         mask = 0b00111111001111110011111100111111001111110011111100111111;
         bit_pos = (bitb & mask);
         if (bit_pos)
-        {
             res |= bit_pos << 10;
-        }
+
         mask = 0b0111111101111111011111110111111101111111011111110000000000000000;
         bit_pos = (bitb & mask);
         if (bit_pos)
-        {
             res |= bit_pos >> 15;
-        }
+
         mask = 0b1111111011111110111111101111111011111110111111100000000000000000;
         bit_pos = (bitb & mask);
         if (bit_pos)
-        {
             res |= bit_pos >> 17;
-        }
+
         return res;
     }
     void generate_knight_moves(Chessboard board, Color color, std::vector<Move> &res)
@@ -210,65 +202,49 @@ namespace board
             {
                 bit_pos = (piece) << 15;
                 if ((bit_pos & same_col_occ) == 0)
-                {
                     res.push_back(Move(pos, Position(static_cast<File>(x + 1), static_cast<Rank>(y + 2)), board::PieceType::KNIGHT, color));
-                }
             }
             if (x < 6 && y < 7) 
             {
                 bit_pos = (piece) << 6;
                 if ((bit_pos & same_col_occ) == 0)
-                {
                     res.push_back(Move(pos, Position(static_cast<File>(x + 2), static_cast<Rank>(y + 1)), board::PieceType::KNIGHT, color));                  
-                }
             }
             if (x < 6 && y > 0)
             {
                 bit_pos = (piece) >> 10;
-                if ((bit_pos & same_col_occ) == 0)
-                {            
+                if ((bit_pos & same_col_occ) == 0)          
                     res.push_back(Move(pos, Position(static_cast<File>(x + 2), static_cast<Rank>(y - 1)), board::PieceType::KNIGHT, color));                
-                }
             }
             if (x < 6 && y > 1)
             {
                 bit_pos = (piece) >> 17;
                 if ((bit_pos & same_col_occ) == 0)
-                {
                     res.push_back(Move(pos, Position(static_cast<File>(x + 1), static_cast<Rank>(y - 2)), board::PieceType::KNIGHT, color));                  
-                }
             }
             if (x > 0 && y < 6)
             {
                 bit_pos = (piece) << 17;
-                if ((bit_pos & same_col_occ) == 0)
-                {              
+                if ((bit_pos & same_col_occ) == 0)             
                     res.push_back(Move(pos, Position(static_cast<File>(x - 1), static_cast<Rank>(y + 2)), board::PieceType::KNIGHT, color));                  
-                }
             }
             if (x > 1 && y < 7)
             {
                 bit_pos = (piece) << 10;
                 if ((bit_pos & same_col_occ) == 0)
-                {
                     res.push_back(Move(pos, Position(static_cast<File>(x - 2), static_cast<Rank>(y + 1)), board::PieceType::KNIGHT, color));                  
-                }
             }
             if (x > 1 && y > 0)
             {
                 bit_pos = (piece) >> 6;
-                if ((bit_pos & same_col_occ) == 0)
-                {            
+                if ((bit_pos & same_col_occ) == 0)         
                     res.push_back(Move(pos, Position(static_cast<File>(x - 2), static_cast<Rank>(y - 1)), board::PieceType::KNIGHT, color));                  
-                }
             }
             if (x > 0 && y > 1)
             {
                 bit_pos = (piece) >> 15;
                 if ((bit_pos & same_col_occ) == 0)
-                {               
                     res.push_back(Move(pos, Position(static_cast<File>(x - 1), static_cast<Rank>(y - 2)), board::PieceType::KNIGHT, color));                  
-                }
             }
             bitb -= piece;
         }
