@@ -7,6 +7,7 @@
 #include "piece-type.hh"
 #include "position.hh" 
 #include "move.hh"
+#include "pgn-move.hh"
 #include "rule.hh"
 
 namespace board
@@ -26,6 +27,7 @@ namespace board
         bool is_draw();
         void print_board(void);
         bool is_check_compatible(Move move, uint64_t piece);
+        Move move_from_pgn(PgnMove pgnmove);
         // std::pair<PieceType, Color> operator[](Position position);
         
         unsigned int turn_;
