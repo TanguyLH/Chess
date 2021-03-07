@@ -35,7 +35,6 @@ namespace board
         bool black_queen_castling_;
         std::vector<uint64_t> boards_;
         uint64_t pins_;
-        uint64_t w_attack;
-        uint64_t b_attack;
+        uint64_t en_passant;
     };
 }

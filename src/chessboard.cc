@@ -34,9 +34,9 @@ namespace board
         for (uint64_t j = 1L << 55; j > 1L << 47; j >>= 1)
             res |= j;
         this->boards_.push_back(res);
-        this->boards_[10] += (1L << 17);
         board_filler(this->boards_, 59, -1);
         this->pins_ = 0ULL;
+        this->en_passant = 0;
     }
 
     void Chessboard::print_board()
@@ -120,20 +120,51 @@ namespace board
         return false;
     }
   
+    uint64_t get_occupancy2(std::vector<uint64_t> boards, bool is_white)
+    {
+        uint64_t res = 0;
+        short col = is_white == 1 ? 0 : 6;
+        for (int i = col; i < col + 6; i++)
+        {
+            res = res | boards[i];
+        }
+        return res;
+    }
+
     void Chessboard::do_move(Move move)
     {
         if (!is_move_legal(move))
             return;
 
         int turn_offset = white_turn_ ? 0 : 6;
-        int index = static_cast<int>(move.piece_) + turn_offset;
-        uint64_t dep = 1L << (static_cast<int>(move.from_.rank_get()) * 8 + (7 - static_cast<int>((move.from_.file_get()))));
-        uint64_t arr = 1L << (static_cast<int>(move.to_.rank_get()) * 8 + (7 - static_cast<int>((move.to_.file_get()))));
-        this->boards_[index] &= ~dep;
-        this->boards_[index] |= arr;
+        int piece_type = static_cast<int>(move.piece_);
+        int index = piece_type + turn_offset;
+        uint64_t adv_col_occ = get_occupancy2((*this).boards_, !(this->white_turn_));
 
-        turn_offset = 6 - turn_offset;           
-        for (auto i = 0 + turn_offset; i < 6 + turn_offset; i++)
+        int from_rank = static_cast<int>(move.from_.rank_get());
+        int to_rank = static_cast<int>(move.to_.rank_get());
+        int from_file = static_cast<int>(move.from_.file_get());
+        int to_file = static_cast<int>(move.to_.file_get());
+
+        uint64_t dep = 1L << (from_rank * 8 + (7 - from_file));
+        uint64_t arr = 1L << (to_rank * 8 + (7 - to_file));
+
+        this->en_passant = 0;
+        if (((from_rank == 1 && to_rank == 3) || (from_rank == 6 && to_rank == 4)) && piece_type == 4)
+            this->en_passant = arr;
+
+        this->boards_[index] |= arr;
+        this->boards_[index] &= ~dep;
+
+        turn_offset = 6 - turn_offset;
+        if (from_file != to_file && !(arr & adv_col_occ))
+        {
+            int tmp = (to_rank * 8 + (7 - to_file));
+            uint64_t tmp2 = (1L << (tmp - 8));
+            this->boards_[4 + turn_offset] -= tmp2;
+        }
+       
+        for (auto i = turn_offset; i < 6 + turn_offset; i++)
         {
             if (this->boards_[i] & arr)
             {

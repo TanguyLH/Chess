@@ -12,6 +12,7 @@ namespace board
         }
         return res;
     }
+
     void print_BitBoard(uint64_t b)
     {
         int count = 1;
@@ -40,6 +41,7 @@ namespace board
         }
         std::cout << std::endl;
     }
+
     uint64_t generate_pawn_attacks(Chessboard board, Color color)
     {
         uint64_t res = 0;
@@ -47,6 +49,8 @@ namespace board
         if (color == board::Color::WHITE)
         {
             uint64_t bitb = color == board::Color::WHITE ? board.boards_[4] : board.boards_[10];
+            //if ((bit << 1) & )
+            
             bit_pos = bitb << 7;
             bit_pos &= 0b0111111101111111011111110111111101111111011111110111111101111111;
             res |= bit_pos;         
@@ -65,7 +69,8 @@ namespace board
             res |= bit_pos;                   
         }
         return res;
-    }        
+    }
+
     void generate_pawn_moves(Chessboard board, Color color, std::vector<Move> &res)
     {
         uint64_t bitb = color == board::Color::WHITE ? board.boards_[4] : board.boards_[10];
@@ -82,6 +87,19 @@ namespace board
             uint64_t bit_pos = 0;
             if (color == board::Color::WHITE)
             {
+                if ((piece << 1) & board.en_passant)
+                {
+                    bit_pos = (piece << 1) & board.en_passant;
+                    if (!((bit_pos << 9) & all_occ))
+                        res.push_back(Move(pos, Position(static_cast<File>(x - 1), static_cast<Rank>(y + 1)), board::PieceType::PAWN, color));
+                }
+                if ((piece >> 1) & board.en_passant)
+                {
+                    
+                    bit_pos = (piece >> 1) & board.en_passant;
+                    if (!((bit_pos << 7) & all_occ))
+                        res.push_back(Move(pos, Position(static_cast<File>(x + 1), static_cast<Rank>(y + 1)), board::PieceType::PAWN, color));
+                }
                 //capture move
                 if (x < 7)
                 {
@@ -101,9 +119,7 @@ namespace board
                 {
                     res.push_back(Move(pos, Position(static_cast<File>(x), static_cast<Rank>(y + 1)), board::PieceType::PAWN, color));
                     if (y == 1 && !((bit_pos <<= 8) & all_occ))
-                    {
                         res.push_back(Move(pos, Position(static_cast<File>(x), static_cast<Rank>(y + 2)), board::PieceType::PAWN, color));                         
-                    }
                 }          
                 
             }
@@ -185,6 +201,7 @@ namespace board
 
         return res;
     }
+
     void generate_knight_moves(Chessboard board, Color color, std::vector<Move> &res)
     {
         uint64_t bitb = color == board::Color::WHITE ? board.boards_[3] : board.boards_[9];
