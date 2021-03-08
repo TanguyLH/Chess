@@ -3,15 +3,15 @@
 namespace board
 {
 
-    Move::Move(Position from, Position to, PieceType piece, Color color, opt_piecetype_t promotion)
-        : from_(from), to_(to), piece_(piece), color_(color), promotion_(promotion)
+    Move::Move(Position from, Position to, PieceType piece, opt_piecetype_t promotion)
+        : from_(from), to_(to), piece_(piece), promotion_(promotion)
     {}
 
-    short Move::board_index() const
+    /*short Move::board_index() const
     {
         return static_cast<short>(piece_)
                + (color_ == Color::BLACK ? 6 : 0);
-    }
+    }*/
 
     std::string to_sFile(File file)
     {

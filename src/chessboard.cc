@@ -262,10 +262,9 @@ namespace board
 
     Move Chessboard::move_from_pgn(PgnMove pgnmove)
     {
-        Color color = static_cast<Color>(!this->white_turn_);
         Position start = pgnmove.start_get();
         Position end = pgnmove.end_get();
         std::optional<PieceType> promotion = pgnmove.promotion_get();
-        return Move(start, end, pgnmove.piece_get(), color, promotion);
+        return Move(start, end, pgnmove.piece_get(), promotion);
     }
 }

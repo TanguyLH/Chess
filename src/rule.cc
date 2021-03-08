@@ -182,7 +182,7 @@ namespace board
                     {
                         auto mv = Move(pos, Position(static_cast<File>(x - 1),
                                                      static_cast<Rank>(y + 1)),
-                                       board::PieceType::PAWN, color, std::nullopt);
+                                       board::PieceType::PAWN, std::nullopt);
                         if (board.is_check_compatible(mv, piece))
                             res.push_back(mv);
                     }
@@ -194,7 +194,7 @@ namespace board
                     {
                         auto mv = Move(pos, Position(static_cast<File>(x + 1),
                                                      static_cast<Rank>(y + 1)),
-                                       board::PieceType::PAWN, color, std::nullopt);
+                                       board::PieceType::PAWN, std::nullopt);
                         if (board.is_check_compatible(mv, piece))
                             res.push_back(mv);
                     }
@@ -207,7 +207,7 @@ namespace board
                     {
                         auto mv = Move(pos, Position(static_cast<File>(x + 1),
                                                      static_cast<Rank>(y + 1)),
-                                       board::PieceType::PAWN, color, std::nullopt);
+                                       board::PieceType::PAWN, std::nullopt);
                         if (board.is_check_compatible(mv, piece))
                             res.push_back(mv);
                     }
@@ -219,7 +219,7 @@ namespace board
                     {
                         auto mv = Move(pos, Position(static_cast<File>(x - 1),
                                                      static_cast<Rank>(y + 1)),
-                                       board::PieceType::PAWN, color, std::nullopt);
+                                       board::PieceType::PAWN, std::nullopt);
                         if (board.is_check_compatible(mv, piece))
                             res.push_back(mv);
                     }
@@ -230,14 +230,14 @@ namespace board
                 {
                     auto mv = Move(pos, Position(static_cast<File>(x),
                                                  static_cast<Rank>(y + 1)),
-                                   board::PieceType::PAWN, color, std::nullopt);
+                                   board::PieceType::PAWN, std::nullopt);
                     if (board.is_check_compatible(mv, piece))
                         res.push_back(mv);
                     if (y == 1 && !((bit_pos <<= 8) & all_occ))
                     {
                         mv = Move(pos, Position(static_cast<File>(x),
                                                  static_cast<Rank>(y + 2)),
-                                    board::PieceType::PAWN, color, std::nullopt);
+                                    board::PieceType::PAWN, std::nullopt);
                         if (board.is_check_compatible(mv, piece))
                             res.push_back(mv);
                     }
@@ -253,7 +253,7 @@ namespace board
                     {
                         auto mv = Move(pos, Position(static_cast<File>(x - 1),
                                                  static_cast<Rank>(y - 1)),
-                                   board::PieceType::PAWN, color, std::nullopt);
+                                   board::PieceType::PAWN, std::nullopt);
                         if (board.is_check_compatible(mv, piece))
                             res.push_back(mv);
                     }
@@ -265,7 +265,7 @@ namespace board
                     {
                         auto mv = Move(pos, Position(static_cast<File>(x + 1),
                                                  static_cast<Rank>(y - 1)),
-                                   board::PieceType::PAWN, color, std::nullopt);
+                                   board::PieceType::PAWN, std::nullopt);
                         if (board.is_check_compatible(mv, piece))
                             res.push_back(mv);
                     }
@@ -276,14 +276,14 @@ namespace board
                 {
                     auto mv = Move(pos, Position(static_cast<File>(x),
                                                  static_cast<Rank>(y - 1)),
-                                   board::PieceType::PAWN, color, std::nullopt);
+                                   board::PieceType::PAWN, std::nullopt);
                     if (board.is_check_compatible(mv, piece))
                         res.push_back(mv);
                     if (y == 6 && !((bit_pos >>= 8) & all_occ))
                     {
                         auto mv = Move(pos, Position(static_cast<File>(x),
                                                  static_cast<Rank>(y - 2)),
-                                   board::PieceType::PAWN, color, std::nullopt);
+                                   board::PieceType::PAWN, std::nullopt);
                         if (board.is_check_compatible(mv, piece))
                             res.push_back(mv);
                     }
@@ -371,7 +371,7 @@ namespace board
                 {
                     auto mv = Move(pos, Position(static_cast<File>(x + 1),
                                                  static_cast<Rank>(y + 2)),
-                                   board::PieceType::KNIGHT, color, std::nullopt);
+                                   board::PieceType::KNIGHT, std::nullopt);
                     if (board.is_check_compatible(mv, piece))
                         res.push_back(mv);
                 }
@@ -383,7 +383,7 @@ namespace board
                 {
                     auto mv = Move(pos, Position(static_cast<File>(x + 2),
                                                  static_cast<Rank>(y + 1)),
-                                   board::PieceType::KNIGHT, color, std::nullopt);
+                                   board::PieceType::KNIGHT, std::nullopt);
                     if (board.is_check_compatible(mv, piece))
                         res.push_back(mv);
                 }
@@ -395,7 +395,7 @@ namespace board
                 {
                     auto mv = Move(pos, Position(static_cast<File>(x + 2),
                                                  static_cast<Rank>(y - 1)),
-                                   board::PieceType::KNIGHT, color, std::nullopt);
+                                   board::PieceType::KNIGHT, std::nullopt);
                     if (board.is_check_compatible(mv, piece))
                         res.push_back(mv);
                 }
@@ -407,7 +407,7 @@ namespace board
                 {
                     auto mv = Move(pos, Position(static_cast<File>(x + 1),
                                                  static_cast<Rank>(y - 2)),
-                                   board::PieceType::KNIGHT, color, std::nullopt);
+                                   board::PieceType::KNIGHT, std::nullopt);
                     if (board.is_check_compatible(mv, piece))
                         res.push_back(mv);
                 }
@@ -419,7 +419,7 @@ namespace board
                 {
                     auto mv = Move(pos, Position(static_cast<File>(x - 1),
                                                  static_cast<Rank>(y + 2)),
-                                   board::PieceType::KNIGHT, color, std::nullopt);
+                                   board::PieceType::KNIGHT, std::nullopt);
                     if (board.is_check_compatible(mv, piece))
                         res.push_back(mv);
                 }
@@ -431,7 +431,7 @@ namespace board
                 {
                     auto mv = Move(pos, Position(static_cast<File>(x - 2),
                                                  static_cast<Rank>(y + 1)),
-                                   board::PieceType::KNIGHT, color, std::nullopt);
+                                   board::PieceType::KNIGHT, std::nullopt);
                     if (board.is_check_compatible(mv, piece))
                         res.push_back(mv);
                 }
@@ -443,7 +443,7 @@ namespace board
                 {
                     auto mv = Move(pos, Position(static_cast<File>(x - 2),
                                                  static_cast<Rank>(y - 1)),
-                                   board::PieceType::KNIGHT, color, std::nullopt);
+                                   board::PieceType::KNIGHT, std::nullopt);
                     if (board.is_check_compatible(mv, piece))
                         res.push_back(mv);
                 }
@@ -455,7 +455,7 @@ namespace board
                 {
                     auto mv = Move(pos, Position(static_cast<File>(x - 1),
                                                  static_cast<Rank>(y - 2)),
-                                   board::PieceType::KNIGHT, color, std::nullopt);
+                                   board::PieceType::KNIGHT, std::nullopt);
                     if (board.is_check_compatible(mv, piece))
                         res.push_back(mv);
                 }
@@ -606,7 +606,7 @@ namespace board
                         break;
                     auto mv = Move(pos, Position(static_cast<File>(curx),
                                                  static_cast<Rank>(cury)),
-                                   type, color, std::nullopt);
+                                   type, std::nullopt);
                     if (board.is_check_compatible(mv, cur))
                         res.push_back(mv);
                     if ((it & ennemi) > 0)
@@ -626,7 +626,7 @@ namespace board
                         break;
                     auto mv = Move(pos, Position(static_cast<File>(curx),
                                                  static_cast<Rank>(cury)),
-                                   type, color, std::nullopt);
+                                   type, std::nullopt);
                     if (board.is_check_compatible(mv, cur))
                         res.push_back(mv);
                     if ((it & ennemi) > 0)
@@ -645,7 +645,7 @@ namespace board
                     break;
                 auto mv = Move(pos, Position(static_cast<File>(curx),
                                              static_cast<Rank>(cury)),
-                                type, color, std::nullopt);
+                                type, std::nullopt);
                 if (board.is_check_compatible(mv, cur))
                     res.push_back(mv);
                 if ((it & ennemi) > 0)
@@ -663,7 +663,7 @@ namespace board
                     break;
                 auto mv = Move(pos, Position(static_cast<File>(curx),
                                              static_cast<Rank>(cury)),
-                                type, color, std::nullopt);
+                                type, std::nullopt);
                 if (board.is_check_compatible(mv, cur))
                     res.push_back(mv);
                 if ((it & ennemi) > 0)
@@ -810,7 +810,7 @@ namespace board
                         break;
                     auto mv = Move(pos, Position(static_cast<File>(curx),
                                                  static_cast<Rank>(cury)),
-                                   type, color, std::nullopt);
+                                   type, std::nullopt);
                     if (board.is_check_compatible(mv, cur))
                         res.push_back(mv);
                     if ((it & ennemi) > 0)
@@ -835,7 +835,7 @@ namespace board
                         break;
                     auto mv = Move(pos, Position(static_cast<File>(curx),
                                                  static_cast<Rank>(cury)),
-                                   type, color, std::nullopt);
+                                   type, std::nullopt);
                     if (board.is_check_compatible(mv, cur))
                         res.push_back(mv);
                     if ((it & ennemi) > 0)
@@ -860,7 +860,7 @@ namespace board
                         break;
                     auto mv = Move(pos, Position(static_cast<File>(curx),
                                                  static_cast<Rank>(cury)),
-                                   type, color, std::nullopt);
+                                   type, std::nullopt);
                     if (board.is_check_compatible(mv, cur))
                         res.push_back(mv);
                     if ((it & ennemi) > 0)
@@ -884,7 +884,7 @@ namespace board
                         break;
                     auto mv = Move(pos, Position(static_cast<File>(curx),
                                                  static_cast<Rank>(cury)),
-                                   type, color, std::nullopt);
+                                   type, std::nullopt);
                     if (board.is_check_compatible(mv, cur))
                         res.push_back(mv);
                     if ((it & ennemi) > 0)
@@ -939,7 +939,7 @@ namespace board
             if ((bit_pos & same_col_occ) == 0)
             {
                 auto mv = Move(pos, Position(static_cast<File>(x - 1),
-                static_cast<Rank>(y + 1)), board::PieceType::KNIGHT, color, std::nullopt);
+                static_cast<Rank>(y + 1)), board::PieceType::KNIGHT, std::nullopt);
                 res.push_back(mv);
             }           
         }
@@ -949,7 +949,7 @@ namespace board
             if ((bit_pos & same_col_occ) == 0)
             {
                 auto mv = Move(pos, Position(static_cast<File>(x),
-                static_cast<Rank>(y + 1)), board::PieceType::KNIGHT, color, std::nullopt);
+                static_cast<Rank>(y + 1)), board::PieceType::KNIGHT, std::nullopt);
                 res.push_back(mv);
             }           
         }
@@ -959,7 +959,7 @@ namespace board
             if ((bit_pos & same_col_occ) == 0)
             {
                 auto mv = Move(pos, Position(static_cast<File>(x + 1),
-                static_cast<Rank>(y + 1)), board::PieceType::KNIGHT, color, std::nullopt);
+                static_cast<Rank>(y + 1)), board::PieceType::KNIGHT, std::nullopt);
                 res.push_back(mv);
             }           
         }
@@ -969,7 +969,7 @@ namespace board
             if ((bit_pos & same_col_occ) == 0)
             {
                 auto mv = Move(pos, Position(static_cast<File>(x - 1),
-                static_cast<Rank>(y)), board::PieceType::KNIGHT, color, std::nullopt);
+                static_cast<Rank>(y)), board::PieceType::KNIGHT, std::nullopt);
                 res.push_back(mv);
             }           
         }
@@ -979,7 +979,7 @@ namespace board
             if ((bit_pos & same_col_occ) == 0)
             {
                 auto mv = Move(pos, Position(static_cast<File>(x + 1),
-                static_cast<Rank>(y)), board::PieceType::KNIGHT, color, std::nullopt);
+                static_cast<Rank>(y)), board::PieceType::KNIGHT, std::nullopt);
                 res.push_back(mv);
             }           
         }
@@ -989,7 +989,7 @@ namespace board
             if ((bit_pos & same_col_occ) == 0)
             {
                 auto mv = Move(pos, Position(static_cast<File>(x - 1),
-                static_cast<Rank>(y - 1)), board::PieceType::KNIGHT, color, std::nullopt);
+                static_cast<Rank>(y - 1)), board::PieceType::KNIGHT, std::nullopt);
                 res.push_back(mv);
             }           
         }
@@ -999,7 +999,7 @@ namespace board
             if ((bit_pos & same_col_occ) == 0)
             {
                 auto mv = Move(pos, Position(static_cast<File>(x),
-                static_cast<Rank>(y - 1)), board::PieceType::KNIGHT, color, std::nullopt);
+                static_cast<Rank>(y - 1)), board::PieceType::KNIGHT, std::nullopt);
                 res.push_back(mv);
             }           
         }
@@ -1009,7 +1009,7 @@ namespace board
             if ((bit_pos & same_col_occ) == 0)
             {
                 auto mv = Move(pos, Position(static_cast<File>(x + 1),
-                static_cast<Rank>(y - 1)), board::PieceType::KNIGHT, color, std::nullopt);
+                static_cast<Rank>(y - 1)), board::PieceType::KNIGHT, std::nullopt);
                 res.push_back(mv);
             }           
         }
