@@ -1,17 +1,18 @@
 #include "chessboard.hh"
+
 #include "generate_move.hh"
 
 namespace board
 {
-
     void board_filler(std::vector<uint64_t> &boards, int i_offset, int j_offset)
     {
-        (j_offset != -1) ? boards.push_back(1L << i_offset | 1L << j_offset) 
-            : boards.push_back(1L << i_offset);
+        (j_offset != -1) ? boards.push_back(1L << i_offset | 1L << j_offset)
+                         : boards.push_back(1L << i_offset);
     }
 
     Chessboard::Chessboard()
     {
+        this->last_turn_ = 0;
         this->turn_ = 0;
         this->white_turn_ = true;
         this->white_king_castling_ = true;
@@ -46,7 +47,7 @@ namespace board
         auto b = this->boards_;
         uint64_t n = 1;
         n <<= 63;
-        for (; n > 0 ; n >>= 1)
+        for (; n > 0; n >>= 1)
         {
             int i = 0;
             std::string color = "\x1B[0m";
@@ -60,22 +61,29 @@ namespace board
                 {
                     if (found)
                     {
-                        std::cerr << "\n\nERROR: 2 PIECES ON SAME CELL\n" << std::endl;
+                        std::cerr << "\n\nERROR: 2 PIECES ON SAME CELL\n"
+                                  << std::endl;
                         exit(1);
                     }
                     found = true;
                     if (i == 0 || i == 6)
-                        std::cout << color << "Q" << "\x1B[0m";
+                        std::cout << color << "Q"
+                                  << "\x1B[0m";
                     else if (i == 1 || i == 7)
-                        std::cout << color << "R" << "\x1B[0m";
+                        std::cout << color << "R"
+                                  << "\x1B[0m";
                     else if (i == 2 || i == 8)
-                        std::cout << color << "B" << "\x1B[0m";
+                        std::cout << color << "B"
+                                  << "\x1B[0m";
                     else if (i == 3 || i == 9)
-                        std::cout << color << "N" << "\x1B[0m";
+                        std::cout << color << "N"
+                                  << "\x1B[0m";
                     else if (i == 4 || i == 10)
-                        std::cout << color << "i" << "\x1B[0m";
+                        std::cout << color << "i"
+                                  << "\x1B[0m";
                     else if (i == 5 || i == 11)
-                        std::cout << color << "K" << "\x1B[0m";
+                        std::cout << color << "K"
+                                  << "\x1B[0m";
                 }
                 i++;
             }
@@ -94,23 +102,38 @@ namespace board
     Chessboard::Chessboard(std::vector<uint64_t> boards)
     {
         this->turn_ = 0;
+        this->last_turn_ = 0;
         this->white_turn_ = true;
         this->white_king_castling_ = true;
         this->white_queen_castling_ = true;
         this->black_king_castling_ = true;
         this->black_queen_castling_ = true;
-        this->boards_ = boards;        
+        this->boards_ = boards;
         this->pins_ = find_absolute_pins(*this);
         this->en_passant = 0ULL;
     }
 
     std::vector<Move> Chessboard::generate_legal_moves()
     {
-        Color color = this->white_turn_ ? board::Color::WHITE : board::Color::BLACK;
+        Color color =
+            this->white_turn_ ? board::Color::WHITE : board::Color::BLACK;
         std::vector<Move> res;
         generate_knight_moves(*this, color, res);
         generate_pawn_moves(*this, color, res);
-        return res;  
+        return res;
+    }
+    std::vector<Move> Chessboard::generate_perft_moves()
+    {
+        Color color =
+            this->white_turn_ ? board::Color::WHITE : board::Color::BLACK;
+        std::vector<Move> res;
+        generate_knight_moves(*this, color, res);
+        generate_queen_moves(*this, color, res);
+        generate_rook_moves(*this, color, res);
+        generate_bishop_moves(*this, color, res);
+        generate_king_moves(*this, color, res);
+        generate_pawn_moves(*this, color, res);
+        return res;
     }
 
     bool Chessboard::is_move_legal(Move move)
@@ -141,7 +164,8 @@ namespace board
         int turn_offset = white_turn_ ? 0 : 6;
         int piece_type = static_cast<int>(move.piece_);
         int index = piece_type + turn_offset;
-        uint64_t adv_col_occ = get_occupancy2((*this).boards_, !(this->white_turn_));
+        uint64_t adv_col_occ =
+            get_occupancy2((*this).boards_, !(this->white_turn_));
 
         int from_rank = static_cast<int>(move.from_.rank_get());
         int to_rank = static_cast<int>(move.to_.rank_get());
@@ -152,7 +176,9 @@ namespace board
         uint64_t arr = 1L << (to_rank * 8 + (7 - to_file));
 
         this->en_passant = 0;
-        if (((from_rank == 1 && to_rank == 3) || (from_rank == 6 && to_rank == 4)) && piece_type == 4)
+        if (((from_rank == 1 && to_rank == 3)
+             || (from_rank == 6 && to_rank == 4))
+            && piece_type == 4)
             this->en_passant = arr;
 
         this->boards_[index] |= arr;
@@ -173,6 +199,6 @@ namespace board
                 this->boards_[i] &= ~arr;
                 break;
             }
-        }           
+        }
     }
-}
+} // namespace board

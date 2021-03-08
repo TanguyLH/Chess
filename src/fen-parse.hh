@@ -7,5 +7,5 @@
 
 namespace fen
 {
-    board::Chessboard parse_fen_file(const std::string &file);
+    uint64_t parse_fen_file(const std::string &file);
 }

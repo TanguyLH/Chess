@@ -1,12 +1,14 @@
 #include "fen-parse.hh"
+
 #include <cctype>
 #include <string>
+
 #include "chessboard.hh"
+#include "move.hh"
 
 namespace fen
 {
-
-    static void set_en_passant(board::Chessboard &board, std::string fen)
+    static void set_passant_and_flags(board::Chessboard &board, std::string fen)
     {
         size_t i = 0;
         if (fen[i] != '-')
@@ -15,11 +17,29 @@ namespace fen
             int rank = fen[i + 1];
             board.en_passant |= 1ULL << (rank * 8 + file);
         }
+        i += 3;
+        int t = fen[i] - '0';
+        i++;
+        if (fen[i] != ' ')
+        {
+            t *= 10;
+            t += fen[i] - '0';
+            i++;
+        }
+        board.last_turn_ = t;
+        i++;
+        t = fen[i] - '0';
+        if (fen[i] != ' ')
+        {
+            t *= 10;
+            t += fen[i] - '0';
+            i++;
+        }
+        board.turn_ = t;
     }
 
     static void set_flags(board::Chessboard &board, std::string fen)
     {
-        std::cout << '\'' << fen << '\'' << std::endl;
         size_t i = 0;
         board.white_turn_ = (fen[i] == 'w') ? true : false;
         i += 2;
@@ -28,7 +48,7 @@ namespace fen
             board.white_king_castling_ = false;
             board.white_queen_castling_ = false;
             i += 2;
-        } 
+        }
         else
         {
             int count = 0;
@@ -55,58 +75,84 @@ namespace fen
             i += count + 1;
         }
         std::string new_fen = fen.substr(i, fen.length() - i);
-        set_en_passant(board, new_fen);
+        set_passant_and_flags(board, new_fen);
     }
 
-    /*
-    static int bits_set(uint64_t i)
-    {
-        i = i - ((i >> 1) & 0x55555555);
-        i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
-        return (((i + (i >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;
-    }
-    */
-
-    board::Chessboard parse_fen_file(const std::string &file)
+    uint64_t parse_fen_file(const std::string &file)
     {
         std::vector<uint64_t> boards;
-        for (auto &i : boards)
-            i = 0ULL;
+        for (int i = 0; i < 12; i++)
+            boards.push_back(0ULL);
         std::ifstream os(file);
+        if (!os.is_open())
+        {
+            std::cerr << "couldn't open file";
+            return 0ULL;
+        }
         std::string fen;
         std::getline(os, fen);
         size_t len = 0;
         for (; len < fen.length() && fen[len] != ' '; len++)
             ;
         size_t i = 0;
-        for (uint64_t n = (1ULL << 63ULL); n > 0ULL && i < len; n >>= 1)
+        std::cout << "found length ..." << std::endl;
+        std::cout << len << std::endl;
+        char c = fen[0];
+        uint64_t n;
+        int r = 7;
+        int f = 0;
+        for (; i < len; i++)
         {
-            char c = fen[i];
-            if (std::isdigit(c))
+            c = fen[i];
+            if (c == '/')
             {
-                n >>= c - '0';
-                continue;
+                r--;
+                f = 0;
             }
-            bool b = std::islower(c);
-            if (c == 'p' || c == 'P')
-                boards[4 + b * 6] |= n;
-            if (c == 'n' || c == 'N')
-                boards[3 + b * 6] |= n;
-            if (c == 'r' || c == 'R')
-                boards[1 + b * 6] |= n;
-            if (c == 'b' || c == 'B')
-                boards[2 + b * 6] |= n;
-            if (c == 'q' || c == 'Q')
-                boards[b * 6] |= n;
-            if (c == 'k' || c == 'K')
-                boards[5 + b * 6] |= n;
-            i++;
+            else if (c >= '1' && c <= '9')
+            {
+                f += c - '0';
+            }
+            else
+            {
+                n = 1ULL << ((7 - f) + (r * 8));
+                if (c == 'Q')
+                    boards[0] |= n;
+                if (c == 'R')
+                    boards[1] |= n;
+                if (c == 'B')
+                    boards[2] |= n;
+                if (c == 'N')
+                    boards[3] |= n;
+                if (c == 'P')
+                    boards[4] |= n;
+                if (c == 'K')
+                    boards[5] |= n;
+                if (c == 'q')
+                    boards[6] |= n;
+                if (c == 'r')
+                    boards[7] |= n;
+                if (c == 'b')
+                    boards[8] |= n;
+                if (c == 'n')
+                    boards[9] |= n;
+                if (c == 'p')
+                    boards[10] |= n;
+                if (c == 'k')
+                    boards[11] |= n;
+                f++;
+            }
         }
+        std::cout << i << std::endl;
+        std::cout << "created board ..." << std::endl;
         board::Chessboard res(boards);
+        std::cout << "printing it ..." << std::endl;
+        res.print_board();
         i++;
         std::string new_fen = fen.substr(i, fen.length() - i);
+        std::cout << "new_fen : " << new_fen << std::endl;
         set_flags(res, new_fen);
-
-        return res; 
+        std::vector<board::Move> legals = res.generate_legal_moves();
+        return legals.size();
     }
-}
+} // namespace fen
