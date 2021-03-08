@@ -2,6 +2,7 @@
 #include <boost/program_options.hpp>
 #include "move.hh"
 #include "rule.hh"
+#include "gametracer.hh"
 using namespace boost::program_options;
 
 void to_cout(const std::vector<std::string> &v)
@@ -41,8 +42,11 @@ int main(int argc, char *argv[])
     if (vm.count("perft"))
         std::cout << "\npath to a perft file: " << vm["perft"].as<std::string>() << "\n\n";
 
-    board::Chessboard cb;
-    cb.print_board();
+    auto listener_paths = vm["listeners"].as<std::vector<std::string>>();
+    auto pgn_path = vm["pgn"].as<std::string>();
+    board::GameTracer gametracer(pgn_path, listener_paths);
+    gametracer.play_game();
+    /*gametracer.chessboard_.print_board();
     uint64_t knight_attacks = generate_pawn_attacks(cb, board::Color::BLACK);
     board::print_BitBoard(knight_attacks);
     std::vector<board::Move> moves;
@@ -50,6 +54,6 @@ int main(int argc, char *argv[])
     for (auto i = moves.begin(); i != moves.end(); i++)
         (*i).pretty();
     cb.do_move(moves[moves.size() - 3]);
-    cb.print_board();
+    cb.print_board();*/
     return 0;
 }

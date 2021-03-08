@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 
+#include "pgn-parser.hh"
 #include "gametracer.hh"
 
 namespace board
@@ -11,7 +12,9 @@ namespace board
     {
 
 
-        pgn_filepath = pgn_filepath + "INUTILE";
+        auto pgnmoves = pgn_parser::parse_pgn(pgn_filepath);
+        for (auto it : pgnmoves)
+            this->pgnmoves_.push_back(it);
 
         for (auto path : listener_paths)
         {
@@ -73,7 +76,6 @@ namespace board
     void GameTracer::play_game()
     {
         std::cout << "GameTracer: in play_game\n";
-        std::cout << "For now nothing to see but let's try listeners.\n\n";
         std::cout << "Game starting:\n";
         int i = 0;
         for (auto l : this->listeners_)
@@ -83,26 +85,34 @@ namespace board
             i++;
         }
 
-        std::cout << "\nMoving a piece (rook):" << std::endl;
-        i = 0;
-        for (auto l : this->listeners_)
+        std::cout << "\nDo moves:\n" << std::endl;
+        for (auto pmv : this->pgnmoves_)
         {
-            std::cout << "[" << i << "]" << std::endl;
-            l->on_piece_moved(PieceType::ROOK,
-                              Position(File::G, Rank::TWO),
-                              Position(File::G, Rank::SEVEN));
-            i++;
+            auto mv = this->chessboard_.move_from_pgn(pmv);
+            this->chessboard_.do_move(mv);
+            for (auto l : this->listeners_)
+            {
+                l->on_piece_moved(pmv.piece_get(), pmv.start_get(),
+                                  pmv.end_get());
+                if (pmv.capture_get())
+                {
+                    PieceType took = PieceType::KING;
+                    uint64_t pos = 1L << ((7 - static_cast<int>(mv.to_.file_get())) +
+                                   (8 * static_cast<int>(mv.to_.rank_get())));
+                    for (int i = 0; i < 6; i++)
+                    {
+                        if ((this->chessboard_.boards_[i] & pos) ||
+                            (this->chessboard_.boards_[i + 6] & pos))
+                            took = static_cast<PieceType>(i);
+                    }
+                    if (took == PieceType::KING)
+                        throw std::runtime_error("No piece to take or King taken.");
+                    l->on_piece_taken(took, pmv.end_get());
+                }
+            }
         }
+        std::cout << "\nEnd of moves\n";
         
-        std::cout << "\nBlack won !:\n";
-        i = 0;
-        for (auto l : this->listeners_)
-        {
-            std::cout << "[" << i << "]" << std::endl;
-            l->on_player_mat(Color::WHITE);
-            i++;
-        }
-
         std::cout << "\nGame finished:" << std::endl;
         i = 0;
         for (auto l : this->listeners_)

@@ -924,7 +924,7 @@ namespace board
 
         uint64_t bit_pos = 0;
 
-        Color enemy_col = color == Color::WHITE ? Color::WHITE : Color::BLACK;
+        Color enemy_col = color == Color::WHITE ? Color::BLACK : Color::WHITE;
 
         uint64_t attackboard = generate_rook_attacks(board, enemy_col);
         attackboard |= generate_bishop_attacks(board, enemy_col);
@@ -1069,5 +1069,4 @@ namespace board
 
         return res;
     }
-
 } // namespace board

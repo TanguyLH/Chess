@@ -22,5 +22,6 @@ namespace board
         Chessboard chessboard_;
         std::vector<listener::Listener *> listeners_;
         std::vector<void *> libs_;
+        std::vector<PgnMove> pgnmoves_;
     };
 }
