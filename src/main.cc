@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "fen-parse.hh"
+#include "gametracer.hh"
 #include "move.hh"
 #include "rule.hh"
 using namespace boost::program_options;
@@ -39,18 +40,21 @@ int main(int argc, char *argv[])
              it != vm["listeners"].as<std::vector<std::string>>().end(); it++)
             std::cout << "listener: " << *it << std::endl;
         std::cout << "\n";
+        auto listener_paths = vm["listeners"].as<std::vector<std::string>>();
+        auto pgn_path = vm["pgn"].as<std::string>();
+        board::GameTracer gametracer(pgn_path, listener_paths);
+        gametracer.play_game();
     }
 
     if (vm.count("perft"))
     {
         std::cout << "\npath to a perft file: " << vm["perft"].as<std::string>()
                   << "\n\n";
-        fen::parse_fen_file(vm["perft"].as<std::string>());
+        std::cout << fen::parse_fen_file(vm["perft"].as<std::string>())
+                  << std::endl;
     }
 
-    /*
-    board::Chessboard cb;
-    cb.print_board();
+    /*gametracer.chessboard_.print_board();
     uint64_t knight_attacks = generate_pawn_attacks(cb, board::Color::BLACK);
     board::print_BitBoard(knight_attacks);
     std::vector<board::Move> moves;
@@ -58,7 +62,6 @@ int main(int argc, char *argv[])
     for (auto i = moves.begin(); i != moves.end(); i++)
         (*i).pretty();
     cb.do_move(moves[moves.size() - 3]);
-    cb.print_board();
-    */
+    cb.print_board();*/
     return 0;
 }

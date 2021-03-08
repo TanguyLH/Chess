@@ -2,6 +2,7 @@
 
 #include "chessboard.hh"
 #include "generate_move.hh"
+#include "gametracer.hh"
 
 void print_board(uint64_t board)
 {
@@ -27,18 +28,28 @@ void print_board(uint64_t board)
 int main(void)
 {
     std::vector<uint64_t> boards;
+    std::vector<std::string> listener_paths;
+    listener_paths.push_back("./tests/libbasic-output.so");
+    listener_paths.push_back("./tests/libpretty-output.so");
+    board::GameTracer game_tracer("", listener_paths);
+
+    game_tracer.play_game();
+
+    /*std::vector<uint64_t> boards;
     // WHITE QUEEN e8
     boards.push_back(576460752303423488ULL);
     // ROOK h4 & d1
     boards.push_back(16777232ULL);
     // BISHOP b2
     boards.push_back(64ULL | 512ULL);
+    boards.push_back(64ULL);
     // KNIGHT NONE
     boards.push_back(0ULL);
     // PAWN NONE
     boards.push_back(0ULL);
     // KING NONE
     boards.push_back(1ULL);
+    boards.push_back(0ULL);
 
 
     // BLACK QUEEN NONE
@@ -69,3 +80,6 @@ int main(void)
     return 0;
 }
 
+    std::cout << "ended !" << std::endl;*/
+    return 0;
+}

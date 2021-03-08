@@ -16,6 +16,10 @@ set(SRC_ENGINE
     "src/fen-parse.cc"
     "src/move.cc"
     "src/rule.cc"
+    "src/gametracer.cc"
+    "src/pgn-move.cc"
+    "src/pgn-parser.cc"
+    "src/pgn-exception.cc"
 )
 
 # Directories containing headers must be specified in the include_directories()

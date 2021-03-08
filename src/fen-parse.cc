@@ -47,30 +47,32 @@ namespace fen
         {
             board.white_king_castling_ = false;
             board.white_queen_castling_ = false;
+            board.black_king_castling_ = false;
+            board.black_queen_castling_ = false;
             i += 2;
         }
         else
         {
-            int count = 0;
+            int count = 4;
             if (fen.find('q') == std::string::npos)
             {
                 board.black_king_castling_ = false;
-                ++count;
+                --count;
             }
             if (fen.find('k') == std::string::npos)
             {
                 board.black_queen_castling_ = false;
-                ++count;
+                --count;
             }
             if (fen.find('Q') == std::string::npos)
             {
                 board.white_queen_castling_ = false;
-                ++count;
+                --count;
             }
             if (fen.find('K') == std::string::npos)
             {
                 board.white_king_castling_ = false;
-                ++count;
+                --count;
             }
             i += count + 1;
         }
@@ -95,8 +97,6 @@ namespace fen
         for (; len < fen.length() && fen[len] != ' '; len++)
             ;
         size_t i = 0;
-        std::cout << "found length ..." << std::endl;
-        std::cout << len << std::endl;
         char c = fen[0];
         uint64_t n;
         int r = 7;
@@ -143,16 +143,17 @@ namespace fen
                 f++;
             }
         }
-        std::cout << i << std::endl;
-        std::cout << "created board ..." << std::endl;
         board::Chessboard res(boards);
-        std::cout << "printing it ..." << std::endl;
-        res.print_board();
+
         i++;
         std::string new_fen = fen.substr(i, fen.length() - i);
-        std::cout << "new_fen : " << new_fen << std::endl;
         set_flags(res, new_fen);
         std::vector<board::Move> legals = res.generate_legal_moves();
+        res.print_board();
+
+        for (auto i : legals)
+            i.pretty();
+
         return legals.size();
     }
 } // namespace fen

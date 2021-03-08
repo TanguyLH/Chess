@@ -38,7 +38,9 @@ namespace board
         this->boards_.push_back(res);
         board_filler(this->boards_, 59, -1);
         this->pins_ = 0ULL;
-        this->en_passant = 0ULL;
+        this->en_passant = 0;
+        /*for (auto it : this->listen)
+        on_piece_moved(move.type_, move.from_, move.to_)*/
     }
 
     void Chessboard::print_board()
@@ -117,16 +119,23 @@ namespace board
     {
         Color color =
             this->white_turn_ ? board::Color::WHITE : board::Color::BLACK;
+        bool b = !this->white_turn_;
+        Color enemy_col =
+            !this->white_turn_ ? board::Color::WHITE : board::Color::BLACK;
         std::vector<Move> res;
-        generate_knight_moves(*this, color, res);
-        generate_pawn_moves(*this, color, res);
-        return res;
-    }
-    std::vector<Move> Chessboard::generate_perft_moves()
-    {
-        Color color =
-            this->white_turn_ ? board::Color::WHITE : board::Color::BLACK;
-        std::vector<Move> res;
+        uint64_t attack = generate_rook_attacks(*this, enemy_col);
+        attack |= generate_bishop_attacks(*this, enemy_col);
+        attack |= generate_queen_attacks(*this, enemy_col);
+        attack |= generate_pawn_attacks(*this, enemy_col);
+        attack |= generate_knight_attacks(*this, enemy_col);
+        attack |= generate_king_attacks(*this, enemy_col);
+
+        if (this->boards_[5 + b * 6] & attack)
+        {
+            std::cout << "je suis en echec" << std::endl;
+            this->in_check = true;
+        }
+        this->pins_ = find_absolute_pins(*this);
         generate_knight_moves(*this, color, res);
         generate_queen_moves(*this, color, res);
         generate_rook_moves(*this, color, res);
@@ -140,7 +149,7 @@ namespace board
     {
         std::vector<Move> leg_moves = generate_legal_moves();
         for (auto i = leg_moves.begin(); i != leg_moves.end(); i++)
-            if (move.from_ == (*i).from_ && move.to_ == (*i).to_)
+            if (move.from_ == i->from_ && move.to_ == i->to_)
                 return true;
         return false;
     }
@@ -156,7 +165,7 @@ namespace board
         return res;
     }
 
-    void Chessboard::do_move(Move move)
+    void Chessboard::do_move(Move &move)
     {
         if (!is_move_legal(move))
             return;
@@ -184,6 +193,13 @@ namespace board
         this->boards_[index] |= arr;
         this->boards_[index] &= ~dep;
 
+        if (piece_type == 4 && to_rank == 0 && move.promotion_ != std::nullopt)
+        {
+            this->boards_[index] &= ~arr;
+            this->boards_[static_cast<int>(*(move.promotion_)) + turn_offset] |=
+                arr;
+        }
+
         turn_offset = 6 - turn_offset;
         if (from_file != to_file && !(arr & adv_col_occ))
         {
@@ -200,5 +216,82 @@ namespace board
                 break;
             }
         }
+    }
+
+    bool Chessboard::is_check_compatible(Move move, uint64_t piece)
+    {
+        if (!(this->pins_ & piece) || !this->in_check)
+            return true;
+        int turn_offset = white_turn_ ? 0 : 6;
+        int piece_type = static_cast<int>(move.piece_);
+        int index = piece_type + turn_offset;
+        uint64_t adv_col_occ =
+            get_occupancy2((*this).boards_, !(this->white_turn_));
+
+        int from_rank = static_cast<int>(move.from_.rank_get());
+        int to_rank = static_cast<int>(move.to_.rank_get());
+        int from_file = static_cast<int>(move.from_.file_get());
+        int to_file = static_cast<int>(move.to_.file_get());
+
+        uint64_t dep = 1L << (from_rank * 8 + (7 - from_file));
+        uint64_t arr = 1L << (to_rank * 8 + (7 - to_file));
+
+        this->en_passant = 0;
+        if (((from_rank == 1 && to_rank == 3)
+             || (from_rank == 6 && to_rank == 4))
+            && piece_type == 4)
+            this->en_passant = arr;
+
+        uint64_t savedboard = this->boards_[index];
+        this->boards_[index] |= arr;
+        this->boards_[index] &= ~dep;
+
+        turn_offset = 6 - turn_offset;
+        if (from_file != to_file && !(arr & adv_col_occ))
+        {
+            int tmp = (to_rank * 8 + (7 - to_file));
+            uint64_t tmp2 = (1L << (tmp - 8));
+            this->boards_[4 + turn_offset] -= tmp2;
+        }
+
+        short i;
+        uint64_t eatenboard = 0;
+        for (i = turn_offset; i < 6 + turn_offset; i++)
+        {
+            if (this->boards_[i] & arr)
+            {
+                eatenboard = this->boards_[i];
+                this->boards_[i] &= ~arr;
+                break;
+            }
+        }
+        turn_offset = white_turn_ ? 0 : 6;
+
+        uint64_t attackboard =
+            generate_rook_attacks(*this, static_cast<Color>(white_turn_));
+        attackboard |=
+            generate_bishop_attacks(*this, static_cast<Color>(white_turn_));
+        attackboard |=
+            generate_queen_attacks(*this, static_cast<Color>(white_turn_));
+        attackboard |=
+            generate_pawn_attacks(*this, static_cast<Color>(white_turn_));
+        attackboard |=
+            generate_knight_attacks(*this, static_cast<Color>(white_turn_));
+
+        bool res = !(this->boards_[5 + turn_offset] & attackboard);
+
+        this->boards_[index] = savedboard;
+        if (eatenboard)
+            this->boards_[i] = eatenboard;
+
+        return res;
+    }
+
+    Move Chessboard::move_from_pgn(PgnMove pgnmove)
+    {
+        Position start = pgnmove.start_get();
+        Position end = pgnmove.end_get();
+        std::optional<PieceType> promotion = pgnmove.promotion_get();
+        return Move(start, end, pgnmove.piece_get(), promotion);
     }
 } // namespace board
