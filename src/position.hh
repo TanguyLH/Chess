@@ -10,7 +10,7 @@ namespace board
      * on the board */
     enum class File
     {
-        A,
+        A = 0,
         B,
         C,
         D,
@@ -24,7 +24,7 @@ namespace board
      * on the board */
     enum class Rank
     {
-        ONE,
+        ONE = 0,
         TWO,
         THREE,
         FOUR,

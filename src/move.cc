@@ -91,7 +91,7 @@ namespace board
 
     void Move::pretty()
     {
-        std::cout << "FROM " << to_sFile(this->from_.file_get()) << to_sRank(this->from_.rank_get()) << "\n";
-        std::cout << "TO " << to_sFile(this->to_.file_get()) << to_sRank(this->to_.rank_get()) << "\n";
+        std::cerr << "FROM " << to_sFile(this->from_.file_get()) << to_sRank(this->from_.rank_get()) << "\n";
+        std::cerr << "TO " << to_sFile(this->to_.file_get()) << to_sRank(this->to_.rank_get()) << "\n";
     }
 }
