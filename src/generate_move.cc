@@ -2,19 +2,116 @@
 
 #include <iostream>
 
+#define TOPDOWN                                                                \
+    0b\
+11111111\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+11111111
+
+#define DOWN                                                                   \
+    0b\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+11111111
+
+#define TOP                                                                    \
+    0b\
+11111111\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000
+
+#define LEFT                                                                   \
+    0b\
+10000000\
+10000000\
+10000000\
+10000000\
+10000000\
+10000000\
+10000000\
+10000000
+
+#define RIGHT                                                                  \
+    0b\
+00000001\
+00000001\
+00000001\
+00000001\
+00000001\
+00000001\
+00000001\
+00000001
+
+#define TOPLEFT                                                                \
+    0b\
+11111111\
+10000000\
+10000000\
+10000000\
+10000000\
+10000000\
+10000000\
+10000000
+
+#define TOPRIGHT                                                               \
+    0b\
+11111111\
+00000001\
+00000001\
+00000001\
+00000001\
+00000001\
+00000001\
+00000001
+
+#define BOTLEFT                                                                \
+    0b\
+10000000\
+10000000\
+10000000\
+10000000\
+10000000\
+10000000\
+10000000\
+11111111
+
+#define BOTRIGHT                                                               \
+    0b\
+00000001\
+00000001\
+00000001\
+00000001\
+00000001\
+00000001\
+00000001\
+11111111
+
 namespace board
 {
     static uint64_t get_pin_tdlr(uint64_t obstacles, uint64_t slides,
                                  uint64_t cur)
     {
-        uint64_t sides_lr = 9331882296111890817U;
-        uint64_t sides_td = 255ULL | 1837468647967162368ULL;
         uint64_t res = 0L;
         uint64_t it = cur;
         bool is_pin = false;
         uint64_t pinned = 0L;
         // Gauche
-        while (!(it & sides_lr))
+        while (!(it & LEFT))
         {
             it <<= 1;
             if (it & slides && is_pin)
@@ -30,7 +127,7 @@ namespace board
         // Droite
         it = cur;
         is_pin = false;
-        while (!(it & sides_lr))
+        while (!(it & RIGHT))
         {
             it >>= 1;
             if (it & slides && is_pin)
@@ -46,7 +143,7 @@ namespace board
         it = cur;
         is_pin = false;
         // Haut
-        while (!(it & sides_td))
+        while (!(it & TOP))
         {
             it <<= 8;
             if (it & slides && is_pin)
@@ -62,9 +159,9 @@ namespace board
         it = cur;
         is_pin = false;
         // Bas
-        while (!(it & sides_td))
+        while (!(it & DOWN))
         {
-            it <<= 8;
+            it >>= 8;
             if (it & slides && is_pin)
                 res |= pinned;
             if (it & obstacles && is_pin)
@@ -82,16 +179,16 @@ namespace board
     static uint64_t get_pin_diag(uint64_t obstacles, uint64_t slides,
                                  uint64_t cur)
     {
-        uint64_t sides_lr = 9331882296111890817U;
-        uint64_t sides = 255ULL | 1837468647967162368ULL | sides_lr;
         uint64_t res = 0L;
         uint64_t it = cur;
         bool is_pin = false;
         uint64_t pinned = 0L;
         // Gauche
-        while (!(it & sides))
+        while (!(it & TOPRIGHT))
         {
             it <<= 7;
+
+            //œstd::cerr << it << std::endl;
             if (it & slides && is_pin)
                 res |= pinned;
             if (it & obstacles && is_pin)
@@ -105,7 +202,7 @@ namespace board
         // Droite
         it = cur;
         is_pin = false;
-        while (!(it & sides))
+        while (!(it & BOTLEFT))
         {
             it >>= 7;
             if (it & slides && is_pin)
@@ -121,7 +218,7 @@ namespace board
         it = cur;
         is_pin = false;
         // Haut
-        while (!(it & sides))
+        while (!(it & TOPLEFT))
         {
             it <<= 9;
             if (it & slides && is_pin)
@@ -137,9 +234,9 @@ namespace board
         it = cur;
         is_pin = false;
         // Bas
-        while (!(it & sides))
+        while (!(it & BOTRIGHT))
         {
-            it <<= 9;
+            it >>= 9;
             if (it & slides && is_pin)
                 res |= pinned;
             if (it & obstacles && is_pin)

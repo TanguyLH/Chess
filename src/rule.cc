@@ -118,7 +118,7 @@ namespace board
         for (uint64_t n = 1L << 63; n > 0; n >>= 1)
         {
             bool found = false;
-            std::cout << " | ";
+            std::cerr << " | ";
             if (b & n)
             {
                 if (found)
@@ -128,18 +128,20 @@ namespace board
                     exit(1);
                 }
                 found = true;
-                std::cout << "X";
+                std::cerr << "X";
             }
             if (!found)
-                std::cout << " ";
+                std::cerr << " ";
             if (!(count % 8))
             {
-                std::cout << " | ";
-                std::cout << std::endl;
+                std::cerr << " | ";
+                std::cerr << 9 - count / 8;
+                std::cerr << std::endl;
             }
             count++;
         }
-        std::cout << std::endl;
+        std::cerr << "   A   B   C   D   E   F   G   H" << std::endl;
+        std::cerr << std::endl;
     }
 
     uint64_t generate_pawn_attacks(Chessboard board, Color color)
@@ -180,6 +182,8 @@ namespace board
     void generate_pawn_moves(Chessboard board, Color color,
                              std::vector<Move> &res)
     {
+        std::cerr << "Board en passant " << std::endl;
+        print_BitBoard(board.en_passant);
         uint64_t bitb =
             color == board::Color::WHITE ? board.boards_[4] : board.boards_[10];
         while (bitb)
@@ -197,11 +201,13 @@ namespace board
             uint64_t bit_pos = 0;
             if (color == board::Color::WHITE)
             {
-                if ((piece << 1) & board.en_passant)
+                if ((piece << 9) & board.en_passant)
                 {
+                    std::cerr << "j'essaye un en passant gauche" << std::endl;
                     bit_pos = (piece << 1) & board.en_passant;
-                    if (!((bit_pos << 9) & all_occ))
+                    if (!((bit_pos << 8) & all_occ))
                     {
+                        std::cerr << "je peux faire un en passant" << std::endl;
                         auto mv = Move(pos,
                                        Position(static_cast<File>(x - 1),
                                                 static_cast<Rank>(y + 1)),
@@ -210,14 +216,14 @@ namespace board
                             res.push_back(mv);
                     }
                 }
-                if ((piece >> 1) & board.en_passant)
+                if ((piece << 7) & board.en_passant)
                 {
                     print_BitBoard(board.en_passant);
-                    std::cout << "j'essaye un en passant" << std::endl;
+                    std::cerr << "j'essaye un en passant droit" << std::endl;
                     bit_pos = (piece >> 1) & board.en_passant;
-                    if (!((bit_pos << 7) & all_occ))
+                    if (!((bit_pos << 8) & all_occ))
                     {
-                        std::cout << "je peux faire un en passant" << std::endl;
+                        std::cerr << "je peux faire un en passant" << std::endl;
                         auto mv = Move(pos,
                                        Position(static_cast<File>(x + 1),
                                                 static_cast<Rank>(y + 1)),
@@ -276,6 +282,37 @@ namespace board
             }
             else
             {
+                if ((piece >> 9) & board.en_passant)
+                {
+                    std::cerr << "j'essaye un en passant gauche" << std::endl;
+                    bit_pos = (piece >> 1) & board.en_passant;
+                    if (!((bit_pos >> 8) & all_occ))
+                    {
+                        std::cerr << "je peux faire un en passant" << std::endl;
+                        auto mv = Move(pos,
+                                       Position(static_cast<File>(x - 1),
+                                                static_cast<Rank>(y + 1)),
+                                       board::PieceType::PAWN, std::nullopt);
+                        if (board.is_check_compatible(mv, piece))
+                            res.push_back(mv);
+                    }
+                }
+                if ((piece >> 7) & board.en_passant)
+                {
+                    print_BitBoard(board.en_passant);
+                    std::cerr << "j'essaye un en passant droit" << std::endl;
+                    bit_pos = (piece << 1) & board.en_passant;
+                    if (!((bit_pos >> 8) & all_occ))
+                    {
+                        std::cerr << "je peux faire un en passant" << std::endl;
+                        auto mv = Move(pos,
+                                       Position(static_cast<File>(x + 1),
+                                                static_cast<Rank>(y + 1)),
+                                       board::PieceType::PAWN, std::nullopt);
+                        if (board.is_check_compatible(mv, piece))
+                            res.push_back(mv);
+                    }
+                }
                 // capture move
                 if (x > 0)
                 {
@@ -438,7 +475,8 @@ namespace board
                         res.push_back(mv);
                 }
             }
-            if (x < 6 && y > 1)
+            std::cerr << x << " " << y << std::endl;
+            if (x < 7 && y > 1)
             {
                 bit_pos = (piece) >> 17;
                 if ((bit_pos & same_col_occ) == 0)
@@ -520,7 +558,7 @@ namespace board
 
         uint64_t all = get_occupancy(board.boards_, true)
             | get_occupancy(board.boards_, false);
-        /*std::cout << std::endl << "------ ALL: ------------" << std::endl;
+        /*std::cerr << std::endl << "------ ALL: ------------" << std::endl;
         print_board(buildboard(all, 0));*/
 
         short i = (!is_queen) + (static_cast<bool>(color) ? 6 : 0);
@@ -537,10 +575,10 @@ namespace board
             uint64_t curn = log2(rooks);
             uint64_t cur = 1ULL << curn;
             rooks -= cur;
-            /*std::cout << std::endl << "------ NEW ROOK: ------------" <<
+            /*std::cerr << std::endl << "------ NEW ROOK: ------------" <<
             std::endl; print_board(buildboard(cur, i));*/
 
-            // std::cout << std::endl << "ATTACKS:" << std::endl;
+            // std::cerr << std::endl << "ATTACKS:" << std::endl;
             uint64_t mvs = 0;
             uint64_t it = cur;
 
@@ -604,11 +642,8 @@ namespace board
                              std::vector<Move> &res, bool is_queen)
     {
         // Mask des coté du board (plus tard je ferais pareil pour le haut/bas)
-        uint64_t right = RIGHT;
-        uint64_t left = LEFT;
 
         // Mask des haut/bas du board
-        uint64_t topdown = TOPDOWN;
 
         uint64_t ami =
             get_occupancy(board.boards_, !(static_cast<bool>(color)));
@@ -633,17 +668,17 @@ namespace board
             short y = (curn / 8);
             auto pos = Position(static_cast<File>(x), static_cast<Rank>(y));
 
-            /*std::cout << std::endl << "------ NEW ROOK: ------------" <<
+            /*std::cerr << std::endl << "------ NEW ROOK: ------------" <<
             std::endl; prAint_board(buildboard(cur, i));*/
 
-            // std::cout << std::endl << "ATTACKS:" << std::endl;
+            // std::cerr << std::endl << "ATTACKS:" << std::endl;
             uint64_t it = cur;
 
             short curx = x;
             short cury = y;
 
             // A GAUCHE
-            if ((it & left) == 0)
+            if ((it & LEFT) == 0)
             {
                 do
                 {
@@ -659,12 +694,12 @@ namespace board
                         res.push_back(mv);
                     if ((it & ennemi) > 0)
                         break;
-                } while ((it & right) == 0 || it == 0);
+                } while ((it & LEFT) == 0);
             }
             // A DROITE
             it = cur;
             curx = x;
-            if ((it & right) == 0)
+            if ((it & RIGHT) == 0)
             {
                 do
                 {
@@ -680,7 +715,7 @@ namespace board
                         res.push_back(mv);
                     if ((it & ennemi) > 0)
                         break;
-                } while ((it & right) == 0 && it > 0);
+                } while ((it & RIGHT) == 0);
             }
 
             // EN HAUT
@@ -702,7 +737,7 @@ namespace board
                         res.push_back(mv);
                     if ((it & ennemi) > 0)
                         break;
-                } while ((it & topdown) == 0 && it);
+                } while ((it & TOP) == 0);
             }
             // EN BAS
             it = cur;
@@ -723,7 +758,7 @@ namespace board
                         res.push_back(mv);
                     if ((it & ennemi) > 0)
                         break;
-                } while ((it & topdown) == 0 && it);
+                } while ((it & DOWN) == 0);
             }
         }
     }
@@ -735,7 +770,7 @@ namespace board
 
         uint64_t all = get_occupancy(board.boards_, true)
             | get_occupancy(board.boards_, false);
-        /*std::cout << std::endl << "------ ALL: ------------" << std::endl;
+        /*std::cerr << std::endl << "------ ALL: ------------" << std::endl;
         print_board(buildboard(all, 0));*/
 
         short i = 2 * (!is_queen) + (static_cast<bool>(color) ? 6 : 0);
@@ -750,11 +785,11 @@ namespace board
             uint64_t curn = log2(bishops);
             uint64_t cur = 1ULL << curn;
             bishops -= cur;
-            /*std::cout << std::endl
+            /*std::cerr << std::endl
                       << "------ NEW BISHOP: ------------" << std::endl;
             print_board(buildboard(cur, i));*/
 
-            // std::cout << std::endl << "ATTACKS:" << std::endl;
+            // std::cerr << std::endl << "ATTACKS:" << std::endl;
             uint64_t mvs = 0;
             uint64_t it = cur;
 
@@ -844,11 +879,11 @@ namespace board
             short x = 7 - (curn % 8);
             short y = (curn / 8);
             auto pos = Position(static_cast<File>(x), static_cast<Rank>(y));
-            /*std::cout << std::endl
+            /*std::cerr << std::endl
                       << "------ NEW BISHOP: ------------" << std::endl;
             print_board(buildboard(cur, i));
 
-            std::cout << std::endl << "ATTACKS:" << std::endl;*/
+            std::cerr << std::endl << "ATTACKS:" << std::endl;*/
             uint64_t it = cur;
 
             uint64_t curx = x;
@@ -992,11 +1027,13 @@ namespace board
         attackboard |= generate_pawn_attacks(board, enemy_col);
         attackboard |= generate_knight_attacks(board, enemy_col);
         attackboard |= generate_king_attacks(board, enemy_col);
+        std::cerr << "attackboard in generate king moves" << std::endl;
+        print_BitBoard(attackboard);
 
         if (x > 0 && y < 7)
         {
             bit_pos = (piece) << 9;
-            if ((bit_pos & same_col_occ) == 0)
+            if ((bit_pos & same_col_occ) == 0 && !(bit_pos & attackboard))
             {
                 auto mv = Move(pos,
                                Position(static_cast<File>(x - 1),
@@ -1008,7 +1045,7 @@ namespace board
         if (y < 7)
         {
             bit_pos = (piece) << 8;
-            if ((bit_pos & same_col_occ) == 0)
+            if ((bit_pos & same_col_occ) == 0 && !(bit_pos & attackboard))
             {
                 auto mv = Move(
                     pos,
@@ -1020,7 +1057,7 @@ namespace board
         if (x < 7 && y < 7)
         {
             bit_pos = (piece) << 7;
-            if ((bit_pos & same_col_occ) == 0)
+            if ((bit_pos & same_col_occ) == 0 && !(bit_pos & attackboard))
             {
                 auto mv = Move(pos,
                                Position(static_cast<File>(x + 1),
@@ -1032,7 +1069,7 @@ namespace board
         if (x > 0)
         {
             bit_pos = (piece) << 1;
-            if ((bit_pos & same_col_occ) == 0)
+            if ((bit_pos & same_col_occ) == 0 && !(bit_pos & attackboard))
             {
                 auto mv = Move(
                     pos,
@@ -1044,7 +1081,7 @@ namespace board
         if (x < 7)
         {
             bit_pos = (piece) >> 1;
-            if ((bit_pos & same_col_occ) == 0)
+            if ((bit_pos & same_col_occ) == 0 && !(bit_pos & attackboard))
             {
                 auto mv = Move(
                     pos,
@@ -1056,7 +1093,7 @@ namespace board
         if (x > 0 && y > 0)
         {
             bit_pos = (piece) >> 7;
-            if ((bit_pos & same_col_occ) == 0)
+            if ((bit_pos & same_col_occ) == 0 && !(bit_pos & attackboard))
             {
                 auto mv = Move(pos,
                                Position(static_cast<File>(x - 1),
@@ -1068,7 +1105,7 @@ namespace board
         if (y > 0)
         {
             bit_pos = (piece) >> 8;
-            if ((bit_pos & same_col_occ) == 0)
+            if ((bit_pos & same_col_occ) == 0 && !(bit_pos & attackboard))
             {
                 auto mv = Move(
                     pos,
@@ -1080,7 +1117,7 @@ namespace board
         if (x < 7 && y > 0)
         {
             bit_pos = (piece) >> 9;
-            if ((bit_pos & same_col_occ) == 0)
+            if ((bit_pos & same_col_occ) == 0 && !(bit_pos & attackboard))
             {
                 auto mv = Move(pos,
                                Position(static_cast<File>(x + 1),

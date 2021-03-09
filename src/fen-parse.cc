@@ -14,8 +14,10 @@ namespace fen
         if (fen[i] != '-')
         {
             int file = fen[i] - 'a';
-            int rank = fen[i + 1];
-            board.en_passant |= 1ULL << (rank * 8 + file);
+            int rank = fen[i + 1] - '1';
+            board::print_BitBoard(board.en_passant);
+            board.en_passant |= 1ULL << (rank * 8 + (7 - file));
+            board::print_BitBoard(board.en_passant);
         }
         i += 3;
         int t = fen[i] - '0';

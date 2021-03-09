@@ -53,7 +53,7 @@ namespace board
         {
             int i = 0;
             std::string color = "\x1B[0m";
-            std::cout << " | ";
+            std::cerr << " | ";
             bool found = false;
             while (i < 12)
             {
@@ -69,36 +69,38 @@ namespace board
                     }
                     found = true;
                     if (i == 0 || i == 6)
-                        std::cout << color << "Q"
+                        std::cerr << color << "Q"
                                   << "\x1B[0m";
                     else if (i == 1 || i == 7)
-                        std::cout << color << "R"
+                        std::cerr << color << "R"
                                   << "\x1B[0m";
                     else if (i == 2 || i == 8)
-                        std::cout << color << "B"
+                        std::cerr << color << "B"
                                   << "\x1B[0m";
                     else if (i == 3 || i == 9)
-                        std::cout << color << "N"
+                        std::cerr << color << "N"
                                   << "\x1B[0m";
                     else if (i == 4 || i == 10)
-                        std::cout << color << "i"
+                        std::cerr << color << "i"
                                   << "\x1B[0m";
                     else if (i == 5 || i == 11)
-                        std::cout << color << "K"
+                        std::cerr << color << "K"
                                   << "\x1B[0m";
                 }
                 i++;
             }
             if (!found)
-                std::cout << " ";
+                std::cerr << " ";
             if (!(count % 8))
             {
-                std::cout << " | ";
-                std::cout << std::endl;
+                std::cerr << " | ";
+                std::cerr << 9 - count / 8;
+                std::cerr << std::endl;
             }
             count++;
         }
-        std::cout << std::endl;
+        std::cerr << "   A   B   C   D   E   F   G   H" << std::endl;
+        std::cerr << std::endl;
     }
 
     Chessboard::Chessboard(std::vector<uint64_t> boards)
@@ -111,6 +113,7 @@ namespace board
         this->black_king_castling_ = true;
         this->black_queen_castling_ = true;
         this->boards_ = boards;
+        this->print_board();
         this->pins_ = find_absolute_pins(*this);
         this->en_passant = 0ULL;
     }
@@ -129,10 +132,12 @@ namespace board
         attack |= generate_pawn_attacks(*this, enemy_col);
         attack |= generate_knight_attacks(*this, enemy_col);
         attack |= generate_king_attacks(*this, enemy_col);
+        std::cerr << "Attacked" << std::endl;
+        print_BitBoard(attack);
 
         if (this->boards_[5 + b * 6] & attack)
         {
-            std::cout << "je suis en echec" << std::endl;
+            std::cerr << "je suis en echec" << std::endl;
             this->in_check = true;
         }
         this->pins_ = find_absolute_pins(*this);
@@ -220,8 +225,9 @@ namespace board
 
     bool Chessboard::is_check_compatible(Move move, uint64_t piece)
     {
-        if (!(this->pins_ & piece) || !this->in_check)
+        if (!(this->pins_ & piece) && !this->in_check)
             return true;
+        //std::cerr << "inside check compatible" << std::endl;
         int turn_offset = white_turn_ ? 0 : 6;
         int piece_type = static_cast<int>(move.piece_);
         int index = piece_type + turn_offset;

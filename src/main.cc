@@ -10,7 +10,7 @@ using namespace boost::program_options;
 void to_cout(const std::vector<std::string> &v)
 {
     std::copy(v.begin(), v.end(),
-              std::ostream_iterator<std::string>{ std::cout, "\n" });
+              std::ostream_iterator<std::string>{ std::cerr, "\n" });
 }
 
 int main(int argc, char *argv[])
@@ -27,19 +27,19 @@ int main(int argc, char *argv[])
     notify(vm);
 
     if (vm.count("help"))
-        std::cout << desc << '\n';
+        std::cerr << desc << '\n';
 
     if (vm.count("pgn"))
-        std::cout << "\npath to the PGN game file: "
+        std::cerr << "\npath to the PGN game file: "
                   << vm["pgn"].as<std::string>() << "\n\n";
 
     if (vm.count("listeners"))
     {
-        std::cout << "\nlisteners\n-----------------------\n";
+        std::cerr << "\nlisteners\n-----------------------\n";
         for (auto it = vm["listeners"].as<std::vector<std::string>>().begin();
              it != vm["listeners"].as<std::vector<std::string>>().end(); it++)
-            std::cout << "listener: " << *it << std::endl;
-        std::cout << "\n";
+            std::cerr << "listener: " << *it << std::endl;
+        std::cerr << "\n";
         auto listener_paths = vm["listeners"].as<std::vector<std::string>>();
         auto pgn_path = vm["pgn"].as<std::string>();
         board::GameTracer gametracer(pgn_path, listener_paths);
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 
     if (vm.count("perft"))
     {
-        std::cout << "\npath to a perft file: " << vm["perft"].as<std::string>()
+        std::cerr << "\npath to a perft file: " << vm["perft"].as<std::string>()
                   << "\n\n";
         std::cout << fen::parse_fen_file(vm["perft"].as<std::string>())
                   << std::endl;
