@@ -2,9 +2,12 @@
 
 namespace board
 {
-
-    Move::Move(Position from, Position to, PieceType piece, opt_piecetype_t promotion)
-        : from_(from), to_(to), piece_(piece), promotion_(promotion)
+    Move::Move(Position from, Position to, PieceType piece,
+               opt_piecetype_t promotion)
+        : from_(from)
+        , to_(to)
+        , piece_(piece)
+        , promotion_(promotion)
     {}
 
     /*short Move::board_index() const
@@ -50,7 +53,7 @@ namespace board
         }
         return res;
     }
-    
+
     std::string to_sRank(Rank rank)
     {
         std::string res;
@@ -91,12 +94,16 @@ namespace board
 
     void Move::pretty()
     {
-        std::cerr << "FROM " << to_sFile(this->from_.file_get()) << to_sRank(this->from_.rank_get()) << "\n";
-        std::cerr << "TO " << to_sFile(this->to_.file_get()) << to_sRank(this->to_.rank_get()) << "\n";
+        std::cerr << "FROM " << to_sFile(this->from_.file_get())
+                  << to_sRank(this->from_.rank_get()) << "\n";
+        std::cerr << "TO " << to_sFile(this->to_.file_get())
+                  << to_sRank(this->to_.rank_get()) << "\n";
     }
     void Move::prettyout()
     {
-        std::cout << "FROM " << to_sFile(this->from_.file_get()) << to_sRank(this->from_.rank_get()) << "\n";
-        std::cout << "TO " << to_sFile(this->to_.file_get()) << to_sRank(this->to_.rank_get()) << "\n";
+        std::cout << "FROM " << to_sFile(this->from_.file_get())
+                  << to_sRank(this->from_.rank_get()) << "\n";
+        std::cout << "TO " << to_sFile(this->to_.file_get())
+                  << to_sRank(this->to_.rank_get()) << "\n";
     }
-}
+} // namespace board

@@ -29,6 +29,7 @@ namespace board
         bool is_check_compatible(Move move, uint64_t piece);
         Move move_from_pgn(PgnMove pgnmove);
         // std::pair<PieceType, Color> operator[](Position position);
+        // Chessboard &operator=(Chessboard);
 
         unsigned int turn_;
         unsigned int last_turn_;

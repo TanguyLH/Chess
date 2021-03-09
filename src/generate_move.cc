@@ -253,7 +253,7 @@ namespace board
     uint64_t find_absolute_pins(Chessboard board)
     {
         uint64_t res = 0L;
-        bool b = board.white_turn_;
+        bool b = !board.white_turn_;
         uint64_t cur = board.boards_[5 + b * 6];
 
         uint64_t obstacles = 0L;

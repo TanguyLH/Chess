@@ -4,22 +4,27 @@
 #include <string>
 
 #include "chessboard.hh"
+#include "depth.hh"
 #include "move.hh"
 
 namespace fen
 {
-    static void set_passant_and_flags(board::Chessboard &board, std::string fen)
+    static int set_passant_and_flags(board::Chessboard &board, std::string fen)
     {
         size_t i = 0;
         if (fen[i] != '-')
         {
             int file = fen[i] - 'a';
             int rank = fen[i + 1] - '1';
-            board::print_BitBoard(board.en_passant);
+            // board::print_BitBoard(board.en_passant);
             board.en_passant |= 1ULL << (rank * 8 + (7 - file));
-            board::print_BitBoard(board.en_passant);
+            // board::print_BitBoard(board.en_passant);
+            i += 3;
         }
-        i += 3;
+        else
+            i++;
+
+        i++;
         int t = fen[i] - '0';
         i++;
         if (fen[i] != ' ')
@@ -28,9 +33,12 @@ namespace fen
             t += fen[i] - '0';
             i++;
         }
+
         board.last_turn_ = t;
         i++;
+
         t = fen[i] - '0';
+        i++;
         if (fen[i] != ' ')
         {
             t *= 10;
@@ -38,9 +46,21 @@ namespace fen
             i++;
         }
         board.turn_ = t;
+        i++;
+
+        t = fen[i] - '0';
+        i++;
+        if (fen[i] >= '0' && fen[i] <= '9')
+        {
+            t *= 10;
+            t += fen[i] - '0';
+            i++;
+        }
+
+        return t;
     }
 
-    static void set_flags(board::Chessboard &board, std::string fen)
+    static int set_flags(board::Chessboard &board, std::string fen)
     {
         size_t i = 0;
         board.white_turn_ = (fen[i] == 'w') ? true : false;
@@ -79,7 +99,7 @@ namespace fen
             i += count + 1;
         }
         std::string new_fen = fen.substr(i, fen.length() - i);
-        set_passant_and_flags(board, new_fen);
+        return set_passant_and_flags(board, new_fen);
     }
 
     uint64_t parse_fen_file(const std::string &file)
@@ -148,14 +168,13 @@ namespace fen
         board::Chessboard res(boards);
 
         i++;
-        std::string new_fen = fen.substr(i, fen.length() - i);
-        set_flags(res, new_fen);
-        std::vector<board::Move> legals = res.generate_legal_moves();
+
+        std::cerr << "BOARD : " << std::endl;
         res.print_board();
+        board::print_BitBoard(res.pins_);
 
-        for (auto i : legals)
-            i.pretty();
-
-        return legals.size();
+        std::string new_fen = fen.substr(i, fen.length() - i);
+        int depth = set_flags(res, new_fen);
+        return generate_all_moves(res, depth);
     }
 } // namespace fen

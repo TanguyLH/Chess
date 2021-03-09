@@ -48,8 +48,10 @@ int main(int argc, char *argv[])
 
     if (vm.count("perft"))
     {
+        /*
         std::cerr << "\npath to a perft file: " << vm["perft"].as<std::string>()
                   << "\n\n";
+        */
         std::cout << fen::parse_fen_file(vm["perft"].as<std::string>())
                   << std::endl;
     }
