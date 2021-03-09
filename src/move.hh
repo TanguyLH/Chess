@@ -18,6 +18,7 @@ namespace board
 
             Move(Position from, Position to, PieceType piece, opt_piecetype_t promotion);
             void pretty();
+            void prettyout();
             short board_index() const;
 
     };

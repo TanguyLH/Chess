@@ -89,7 +89,14 @@ namespace board
         for (auto pmv : this->pgnmoves_)
         {
             auto mv = this->chessboard_.move_from_pgn(pmv);
+            if (!this->chessboard_.is_move_legal(mv))
+            {
+                std::cout << "GameTracer: MOVE NOT LEGAL" << std::endl;
+                mv.prettyout();
+                continue;
+            }
             this->chessboard_.do_move(mv);
+            auto col = this->chessboard_.white_turn_ ? Color::WHITE : Color::BLACK;
             for (auto l : this->listeners_)
             {
                 l->on_piece_moved(pmv.piece_get(), pmv.start_get(),
@@ -106,9 +113,38 @@ namespace board
                             took = static_cast<PieceType>(i);
                     }
                     if (took == PieceType::KING)
-                        throw std::runtime_error("No piece to take or King taken.");
+                        throw std::runtime_error("Nothing to take or King taken.");
                     l->on_piece_taken(took, pmv.end_get());
                 }
+                if (pmv.promotion_get() != std::nullopt)
+                {
+                    PieceType prom = pmv.promotion_get().value();
+                    if (prom == PieceType::KING || prom == PieceType::PAWN)
+                        throw std::runtime_error("Promotion in pawn or King.");
+                    l->on_piece_promoted(prom, pmv.end_get());
+                }
+                if (pmv.piece_get() == PieceType::KING)
+                {
+                    short file_diff = static_cast<int>(mv.to_.file_get()) -
+                                    static_cast<int>(mv.from_.file_get());
+                    if (file_diff == 2)
+                        l->on_kingside_castling(col);
+                    else if (file_diff == -2)
+                        l->on_queenside_castling(col);
+                }
+            }
+            this->chessboard_.white_turn_ = !this->chessboard_.white_turn_;
+            col = this->chessboard_.white_turn_ ? Color::WHITE : Color::BLACK;
+            for (auto l : this->listeners_)
+            {
+                if (this->chessboard_.is_check())
+                {
+                    l->on_player_check(col);
+                    if (this->chessboard_.generate_legal_moves().size() == 0)
+                        l->on_player_mat(col);
+                }
+                else if (this->chessboard_.generate_legal_moves().size() == 0)
+                    l->on_player_pat(col);
             }
         }
         std::cout << "\nEnd of moves\n";

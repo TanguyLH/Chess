@@ -99,6 +99,101 @@
 00000001\
 11111111
 
+#define WKBETWEEN                                                               \
+    0b\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000110
+
+#define WQBETWEEN                                                               \
+    0b\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+01110000
+
+
+
+#define BKBETWEEN                                                               \
+    0b\
+00000110\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000
+
+
+
+#define BQBETWEEN                                                               \
+    0b\
+01110000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000
+
+#define WKCHECK                                                               \
+    0b\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00001110
+
+
+#define WQCHECK                                                               \
+    0b\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00111000
+
+
+#define BKCHECK                                                               \
+    0b\
+00001110\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000
+
+
+#define BQCHECK                                                               \
+    0b\
+00111000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000\
+00000000
+
 namespace board
 {
     uint64_t get_occupancy(std::vector<uint64_t> boards, bool is_white)
@@ -1033,41 +1128,36 @@ namespace board
         std::cerr << "attackboard in generate king moves" << std::endl;
         print_BitBoard(attackboard);
 
-        uint64_t QWC_mask = (1L << 4) + (1L << 5) + (1L << 6);
-        uint64_t KWC_mask = (1L << 1) + (1L << 2);
-        uint64_t KBC_mask = (1L << 58) + (1L << 57);
-        uint64_t QBC_mask = (1L << 62) + (1L << 61) + (1L << 60);
-
-        if (board.white_king_castling_ && !(KWC_mask & all_pieces) && !(KWC_mask & attackboard))
+        if (board.white_king_castling_ && !(WKBETWEEN & all_pieces) && !(WKCHECK & attackboard))
         {
                 auto mv = Move(pos,
                                Position(static_cast<File>(6),
                                         static_cast<Rank>(0)),
-                               board::PieceType::KNIGHT, std::nullopt);
+                               board::PieceType::KING, std::nullopt);
                 res.push_back(mv);
         }
-        if (board.white_queen_castling_ && !(QWC_mask & all_pieces) && !(QWC_mask & attackboard))
+        if (board.white_queen_castling_ && !(WQBETWEEN & all_pieces) && !(WQCHECK & attackboard))
         {
                 auto mv = Move(pos,
                                Position(static_cast<File>(2),
                                         static_cast<Rank>(0)),
-                               board::PieceType::KNIGHT, std::nullopt);
+                               board::PieceType::KING, std::nullopt);
                 res.push_back(mv);
         }
-        if (board.black_king_castling_ && !(QBC_mask & all_pieces) && !(QBC_mask & attackboard))
+        if (board.black_king_castling_ && !(BKBETWEEN & all_pieces) && !(BKCHECK & attackboard))
         {
                 auto mv = Move(pos,
                                Position(static_cast<File>(6),
                                         static_cast<Rank>(7)),
-                               board::PieceType::KNIGHT, std::nullopt);
+                               board::PieceType::KING, std::nullopt);
                 res.push_back(mv);
         }
-        if (board.black_king_castling_ && !(KBC_mask & all_pieces) && !(KBC_mask & attackboard))
+        if (board.black_queen_castling_ && !(BQBETWEEN & all_pieces) && !(BQCHECK & attackboard))
         {
                 auto mv = Move(pos,
                                Position(static_cast<File>(2),
                                         static_cast<Rank>(7)),
-                               board::PieceType::KNIGHT, std::nullopt);
+                               board::PieceType::KING, std::nullopt);
                 res.push_back(mv);
         }
         if (x > 0 && y < 7)
@@ -1078,8 +1168,9 @@ namespace board
                 auto mv = Move(pos,
                                Position(static_cast<File>(x - 1),
                                         static_cast<Rank>(y + 1)),
-                               board::PieceType::KNIGHT, std::nullopt);
-                res.push_back(mv);
+                               board::PieceType::KING, std::nullopt);
+                if (board.is_check_compatible(mv, piece))
+                    res.push_back(mv);
             }
         }
         if (y < 7)
@@ -1090,8 +1181,9 @@ namespace board
                 auto mv = Move(
                     pos,
                     Position(static_cast<File>(x), static_cast<Rank>(y + 1)),
-                    board::PieceType::KNIGHT, std::nullopt);
-                res.push_back(mv);
+                    board::PieceType::KING, std::nullopt);
+                if (board.is_check_compatible(mv, piece))
+                    res.push_back(mv);
             }
         }
         if (x < 7 && y < 7)
@@ -1102,8 +1194,9 @@ namespace board
                 auto mv = Move(pos,
                                Position(static_cast<File>(x + 1),
                                         static_cast<Rank>(y + 1)),
-                               board::PieceType::KNIGHT, std::nullopt);
-                res.push_back(mv);
+                               board::PieceType::KING, std::nullopt);
+                if (board.is_check_compatible(mv, piece))
+                    res.push_back(mv);
             }
         }
         if (x > 0)
@@ -1114,8 +1207,9 @@ namespace board
                 auto mv = Move(
                     pos,
                     Position(static_cast<File>(x - 1), static_cast<Rank>(y)),
-                    board::PieceType::KNIGHT, std::nullopt);
-                res.push_back(mv);
+                    board::PieceType::KING, std::nullopt);
+                if (board.is_check_compatible(mv, piece))
+                    res.push_back(mv);
             }
         }
         if (x < 7)
@@ -1126,8 +1220,9 @@ namespace board
                 auto mv = Move(
                     pos,
                     Position(static_cast<File>(x + 1), static_cast<Rank>(y)),
-                    board::PieceType::KNIGHT, std::nullopt);
-                res.push_back(mv);
+                    board::PieceType::KING, std::nullopt);
+                if (board.is_check_compatible(mv, piece))
+                    res.push_back(mv);
             }
         }
         if (x > 0 && y > 0)
@@ -1138,8 +1233,9 @@ namespace board
                 auto mv = Move(pos,
                                Position(static_cast<File>(x - 1),
                                         static_cast<Rank>(y - 1)),
-                               board::PieceType::KNIGHT, std::nullopt);
-                res.push_back(mv);
+                               board::PieceType::KING, std::nullopt);
+                if (board.is_check_compatible(mv, piece))
+                    res.push_back(mv);
             }
         }
         if (y > 0)
@@ -1150,8 +1246,9 @@ namespace board
                 auto mv = Move(
                     pos,
                     Position(static_cast<File>(x), static_cast<Rank>(y - 1)),
-                    board::PieceType::KNIGHT, std::nullopt);
-                res.push_back(mv);
+                    board::PieceType::KING, std::nullopt);
+                if (board.is_check_compatible(mv, piece))
+                    res.push_back(mv);
             }
         }
         if (x < 7 && y > 0)
@@ -1162,8 +1259,9 @@ namespace board
                 auto mv = Move(pos,
                                Position(static_cast<File>(x + 1),
                                         static_cast<Rank>(y - 1)),
-                               board::PieceType::KNIGHT, std::nullopt);
-                res.push_back(mv);
+                               board::PieceType::KING, std::nullopt);
+                if (board.is_check_compatible(mv, piece))
+                    res.push_back(mv);
             }
         }
     }

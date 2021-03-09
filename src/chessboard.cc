@@ -63,9 +63,10 @@ namespace board
                 {
                     if (found)
                     {
-                        std::cerr << "\n\nERROR: 2 PIECES ON SAME CELL\n"
-                                  << std::endl;
-                        exit(1);
+                        std::cerr << "!";
+                        /*std::cerr << "\n\nERROR: 2 PIECES ON SAME CELL\n"
+                                  << std::endl;*/
+                        //exit(1);
                     }
                     found = true;
                     if (i == 0 || i == 6)
@@ -116,6 +117,21 @@ namespace board
         this->print_board();
         this->pins_ = find_absolute_pins(*this);
         this->en_passant = 0ULL;
+    }
+    
+    bool Chessboard::is_check()
+    {
+        Color enemy_col =
+            !this->white_turn_ ? board::Color::WHITE : board::Color::BLACK;
+        uint64_t attack = generate_rook_attacks(*this, enemy_col);
+        attack |= generate_bishop_attacks(*this, enemy_col);
+        attack |= generate_queen_attacks(*this, enemy_col);
+        attack |= generate_pawn_attacks(*this, enemy_col);
+        attack |= generate_knight_attacks(*this, enemy_col);
+        attack |= generate_king_attacks(*this, enemy_col);
+        if (this->boards_[5 + (!this->white_turn_) * 6] & attack)
+            return true;
+        return false;
     }
 
     std::vector<Move> Chessboard::generate_legal_moves()
@@ -189,33 +205,18 @@ namespace board
         uint64_t dep = 1L << (from_rank * 8 + (7 - from_file));
         uint64_t arr = 1L << (to_rank * 8 + (7 - to_file));
 
-        //castle king blanc
-        if (from_rank == 0 && from_file == 3 && to_rank == 0 && to_file == 1)
+        int kindofcastle = from_file - to_file;
+        //castle king side
+        int i = 1 + (from_rank != 0) * 6;
+        if (kindofcastle == 2)
         {
-            this->boards_[1] -= 1L << 0;
-            this->boards_[1] += 1L << 3;
-            
-        }
-
-        //castle queen blanc
-        if (from_rank == 0 && from_file == 3 && to_rank == 0 && to_file == 5)
+            this->boards_[i] -= 1L << (from_rank == 0 ? 0 : 56);
+            this->boards_[i] += 1L << (from_rank == 0 ? 2 : 58);
+        } //caste queen side
+        else if (kindofcastle == -2)
         {
-            this->boards_[1] -= 1L << 7;
-            this->boards_[1] += 1L << 4;
-        }
-
-        //castle king noir
-        if (from_rank == 4 && from_file == 7 && to_rank == 7 && to_file == 6)
-        {
-            this->boards_[7] -= 1L << 56;
-            this->boards_[7] += 1L << 58;
-        }
-
-        //castle queen noir
-        if (from_rank == 4 && from_file == 7 && to_rank == 7 && to_file == 2)
-        {
-            this->boards_[7] -= 1L << 63;
-            this->boards_[7] += 1L << 60;
+            this->boards_[i] -= 1L << (from_rank == 0 ? 7 : 63);
+            this->boards_[i] += 1L << (from_rank == 0 ? 4 : 60);
         }
 
         //roi  blanc qui bouge
@@ -265,7 +266,7 @@ namespace board
         }
 
         turn_offset = 6 - turn_offset;
-        if (from_file != to_file && !(arr & adv_col_occ))
+        if (piece_type % 6 == 4 && from_file != to_file && !(arr & adv_col_occ))
         {
             int tmp = (to_rank * 8 + (7 - to_file));
             uint64_t tmp2 = (1L << (tmp - 8));
@@ -286,7 +287,7 @@ namespace board
     {
         if (!(this->pins_ & piece) && !this->in_check)
             return true;
-        //std::cerr << "inside check compatible" << std::endl;
+        std::cerr << "inside check compatible" << std::endl;
         int turn_offset = white_turn_ ? 0 : 6;
         int piece_type = static_cast<int>(move.piece_);
         int index = piece_type + turn_offset;
@@ -298,6 +299,7 @@ namespace board
         int from_file = static_cast<int>(move.from_.file_get());
         int to_file = static_cast<int>(move.to_.file_get());
 
+        
         uint64_t dep = 1L << (from_rank * 8 + (7 - from_file));
         uint64_t arr = 1L << (to_rank * 8 + (7 - to_file));
 
@@ -310,17 +312,23 @@ namespace board
         uint64_t savedboard = this->boards_[index];
         this->boards_[index] |= arr;
         this->boards_[index] &= ~dep;
+        std::cerr << "0" << std::endl;
+        print_board();
 
         turn_offset = 6 - turn_offset;
-        if (from_file != to_file && !(arr & adv_col_occ))
+        if (piece_type % 6 == 4 && from_file != to_file && !(arr & adv_col_occ))
         {
             int tmp = (to_rank * 8 + (7 - to_file));
             uint64_t tmp2 = (1L << (tmp - 8));
             this->boards_[4 + turn_offset] -= tmp2;
         }
+        std::cerr << "1" << std::endl;
+        print_board();
 
         short i;
         uint64_t eatenboard = 0;
+        std::cerr << "arr:" << std::endl;
+        print_BitBoard(arr);
         for (i = turn_offset; i < 6 + turn_offset; i++)
         {
             if (this->boards_[i] & arr)
@@ -342,6 +350,9 @@ namespace board
             generate_pawn_attacks(*this, static_cast<Color>(white_turn_));
         attackboard |=
             generate_knight_attacks(*this, static_cast<Color>(white_turn_));
+
+        std::cerr << "2" << std::endl;
+        print_board();
 
         bool res = !(this->boards_[5 + turn_offset] & attackboard);
 
