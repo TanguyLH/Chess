@@ -982,6 +982,9 @@ namespace board
         uint64_t same_col_occ =
             get_occupancy(board.boards_, color == board::Color::WHITE);
 
+        uint64_t all_pieces =
+            (get_occupancy(board.boards_, color == board::Color::BLACK) | same_col_occ);
+
         uint64_t bit_pos = 0;
 
         Color enemy_col = color == Color::WHITE ? Color::BLACK : Color::WHITE;
@@ -993,6 +996,43 @@ namespace board
         attackboard |= generate_knight_attacks(board, enemy_col);
         attackboard |= generate_king_attacks(board, enemy_col);
 
+        uint64_t KWC_mask = (1L << 5) + (1L << 6);
+        uint64_t QWC_mask = (1L << 1) + (1L << 2) + (1L << 3);
+        uint64_t KBC_mask = (1L << 58) + (1L << 57);
+        uint64_t QBC_mask = (1L << 62) + (1L << 61) + (1L << 60);
+
+        if (board.white_king_castling_ && !(KWC_mask & all_pieces) && !(KWC_mask & attackboard))
+        {
+                auto mv = Move(pos,
+                               Position(static_cast<File>(1),
+                                        static_cast<Rank>(0)),
+                               board::PieceType::KNIGHT, std::nullopt);
+                res.push_back(mv);
+        }
+        if (board.white_queen_castling_ && !(QWC_mask & all_pieces) && !(QWC_mask & attackboard))
+        {
+                auto mv = Move(pos,
+                               Position(static_cast<File>(5),
+                                        static_cast<Rank>(0)),
+                               board::PieceType::KNIGHT, std::nullopt);
+                res.push_back(mv);
+        }
+        if (board.black_king_castling_ && !(QBC_mask & all_pieces) && !(QBC_mask & attackboard))
+        {
+                auto mv = Move(pos,
+                               Position(static_cast<File>(6),
+                                        static_cast<Rank>(7)),
+                               board::PieceType::KNIGHT, std::nullopt);
+                res.push_back(mv);
+        }
+        if (board.black_king_castling_ && !(KBC_mask & all_pieces) && !(KBC_mask & attackboard))
+        {
+                auto mv = Move(pos,
+                               Position(static_cast<File>(2),
+                                        static_cast<Rank>(7)),
+                               board::PieceType::KNIGHT, std::nullopt);
+                res.push_back(mv);
+        }
         if (x > 0 && y < 7)
         {
             bit_pos = (piece) << 9;

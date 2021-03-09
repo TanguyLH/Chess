@@ -54,7 +54,9 @@ int main(int argc, char *argv[])
                   << std::endl;
     }
 
-    /*gametracer.chessboard_.print_board();
+    /*board::Chessboard bd = board::Chessboard();
+    bd.print_board();
+    gametracer.chessboard_.print_board();
     uint64_t knight_attacks = generate_pawn_attacks(cb, board::Color::BLACK);
     board::print_BitBoard(knight_attacks);
     std::vector<board::Move> moves;

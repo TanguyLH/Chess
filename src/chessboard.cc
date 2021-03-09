@@ -184,6 +184,65 @@ namespace board
         uint64_t dep = 1L << (from_rank * 8 + (7 - from_file));
         uint64_t arr = 1L << (to_rank * 8 + (7 - to_file));
 
+        //castle king blanc
+        if (from_rank == 0 && from_file == 3 && to_rank == 0 && to_file == 1)
+        {
+            this->boards_[1] -= 1L << 7;
+            this->boards_[1] += 1L << 5;
+            
+        }
+
+        //castle queen blanc
+        if (from_rank == 0 && from_file == 3 && to_rank == 0 && to_file == 5)
+        {
+            this->boards_[1] -= 1L << 0;
+            this->boards_[1] += 1L << 3;
+        }
+
+        //castle king noir
+        if (from_rank == 4 && from_file == 7 && to_rank == 7 && to_file == 6)
+        {
+            this->boards_[7] -= 1L << 56;
+            this->boards_[7] += 1L << 58;
+        }
+
+        //castle queen noir
+        if (from_rank == 4 && from_file == 7 && to_rank == 7 && to_file == 2)
+        {
+            this->boards_[7] -= 1L << 63;
+            this->boards_[7] += 1L << 60;
+        }
+
+        //roi  blanc qui bouge
+        if (this->white_king_castling_ && piece_type == 5)
+        {
+            this->white_king_castling_ = false;
+            this->white_queen_castling_ = false;
+        }
+
+        //roi noir qui bouge
+        if (this->black_king_castling_ && piece_type == 11)
+        {
+            this->black_king_castling_ = false;
+            this->black_queen_castling_ = false;
+        }
+
+        //tour blanche de gauche qui bouge
+        if (this->white_king_castling_ && piece_type == 1 && from_file == 0)
+            this->white_king_castling_ = false;
+
+        //tour blanche de droite qui bouge
+        if (this->white_queen_castling_ && piece_type == 1 && from_file == 7)
+            this->white_queen_castling_ = false;
+
+        //tour noir de gauche qui bouge
+        if (this->black_queen_castling_ && piece_type == 7 && from_file == 0)
+            this->black_queen_castling_ = false;
+
+        //tour noir de droite qui bouge
+        if (this->black_king_castling_ && piece_type == 7 && from_file == 7)
+            this->black_king_castling_ = false;
+
         this->en_passant = 0;
         if (((from_rank == 1 && to_rank == 3)
              || (from_rank == 6 && to_rank == 4))
