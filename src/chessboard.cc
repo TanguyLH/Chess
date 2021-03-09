@@ -20,12 +20,12 @@ namespace board
         this->black_king_castling_ = true;
         this->black_queen_castling_ = true;
 
-        this->boards_.push_back(8);
+        this->boards_.push_back(16);
         this->boards_.push_back(129);
         this->boards_.push_back(36);
         this->boards_.push_back(66);
         this->boards_.push_back(65280);
-        this->boards_.push_back(16);
+        this->boards_.push_back(8);
 
         board_filler(this->boards_, 60, -1);
         board_filler(this->boards_, 63, 56);
@@ -192,16 +192,16 @@ namespace board
         //castle king blanc
         if (from_rank == 0 && from_file == 3 && to_rank == 0 && to_file == 1)
         {
-            this->boards_[1] -= 1L << 7;
-            this->boards_[1] += 1L << 5;
+            this->boards_[1] -= 1L << 0;
+            this->boards_[1] += 1L << 3;
             
         }
 
         //castle queen blanc
         if (from_rank == 0 && from_file == 3 && to_rank == 0 && to_file == 5)
         {
-            this->boards_[1] -= 1L << 0;
-            this->boards_[1] += 1L << 3;
+            this->boards_[1] -= 1L << 7;
+            this->boards_[1] += 1L << 4;
         }
 
         //castle king noir

@@ -1033,15 +1033,15 @@ namespace board
         std::cerr << "attackboard in generate king moves" << std::endl;
         print_BitBoard(attackboard);
 
-        uint64_t KWC_mask = (1L << 5) + (1L << 6);
-        uint64_t QWC_mask = (1L << 1) + (1L << 2) + (1L << 3);
+        uint64_t QWC_mask = (1L << 4) + (1L << 5) + (1L << 6);
+        uint64_t KWC_mask = (1L << 1) + (1L << 2);
         uint64_t KBC_mask = (1L << 58) + (1L << 57);
         uint64_t QBC_mask = (1L << 62) + (1L << 61) + (1L << 60);
 
         if (board.white_king_castling_ && !(KWC_mask & all_pieces) && !(KWC_mask & attackboard))
         {
                 auto mv = Move(pos,
-                               Position(static_cast<File>(1),
+                               Position(static_cast<File>(6),
                                         static_cast<Rank>(0)),
                                board::PieceType::KNIGHT, std::nullopt);
                 res.push_back(mv);
@@ -1049,7 +1049,7 @@ namespace board
         if (board.white_queen_castling_ && !(QWC_mask & all_pieces) && !(QWC_mask & attackboard))
         {
                 auto mv = Move(pos,
-                               Position(static_cast<File>(5),
+                               Position(static_cast<File>(2),
                                         static_cast<Rank>(0)),
                                board::PieceType::KNIGHT, std::nullopt);
                 res.push_back(mv);
